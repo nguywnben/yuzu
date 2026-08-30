@@ -54,6 +54,25 @@ void main() {
         throwsArgumentError,
       );
     });
+
+    test('rejects unbounded retry settings', () {
+      expect(
+        () => CatalogTransportRequest.json(
+          operation: CatalogOperation.home,
+          payload: const {},
+          maxAttempts: 0,
+        ),
+        throwsArgumentError,
+      );
+      expect(
+        () => CatalogTransportRequest.json(
+          operation: CatalogOperation.home,
+          payload: const {},
+          maxAttempts: CatalogTransportRequest.maxAttemptLimit + 1,
+        ),
+        throwsArgumentError,
+      );
+    });
   });
 
   test('CatalogCancellationToken completes once when cancelled', () async {

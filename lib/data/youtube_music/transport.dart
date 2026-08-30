@@ -14,6 +14,7 @@ final class CatalogTransportRequest {
     required this._bodyBytes,
     required this.timeout,
     required this.maxResponseBytes,
+    required this.maxAttempts,
     this.cancellationToken,
   });
 
@@ -22,6 +23,7 @@ final class CatalogTransportRequest {
     required Map<String, Object?> payload,
     Duration timeout = defaultTimeout,
     int maxResponseBytes = defaultMaxResponseBytes,
+    int maxAttempts = defaultMaxAttempts,
     CatalogCancellationToken? cancellationToken,
   }) {
     if (timeout <= Duration.zero || timeout > maxTimeout) {
@@ -36,6 +38,13 @@ final class CatalogTransportRequest {
         maxResponseBytes,
         'maxResponseBytes',
         'must be between 1 and $maxResponseByteLimit',
+      );
+    }
+    if (maxAttempts <= 0 || maxAttempts > maxAttemptLimit) {
+      throw ArgumentError.value(
+        maxAttempts,
+        'maxAttempts',
+        'must be between 1 and $maxAttemptLimit',
       );
     }
 
@@ -59,6 +68,7 @@ final class CatalogTransportRequest {
       bodyBytes: bodyBytes,
       timeout: timeout,
       maxResponseBytes: maxResponseBytes,
+      maxAttempts: maxAttempts,
       cancellationToken: cancellationToken,
     );
   }
@@ -68,11 +78,14 @@ final class CatalogTransportRequest {
   static const maxRequestBytes = 64 * 1024;
   static const defaultMaxResponseBytes = 1024 * 1024;
   static const maxResponseByteLimit = 4 * 1024 * 1024;
+  static const defaultMaxAttempts = 2;
+  static const maxAttemptLimit = 3;
 
   final CatalogOperation operation;
   final Uint8List _bodyBytes;
   final Duration timeout;
   final int maxResponseBytes;
+  final int maxAttempts;
   final CatalogCancellationToken? cancellationToken;
 
   Uint8List get bodyBytes => Uint8List.fromList(_bodyBytes);
@@ -80,7 +93,8 @@ final class CatalogTransportRequest {
   @override
   String toString() =>
       'CatalogTransportRequest(operation: ${operation.name}, '
-      'timeout: $timeout, maxResponseBytes: $maxResponseBytes)';
+      'timeout: $timeout, maxResponseBytes: $maxResponseBytes, '
+      'maxAttempts: $maxAttempts)';
 }
 
 final class CatalogTransportResponse {
