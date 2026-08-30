@@ -6,7 +6,7 @@ Tạo nền tảng Flutter Android có thể build, test và mở rộng an toà
 
 ## Tech Stack
 
-- Flutter stable và Dart đi kèm, phiên bản được khóa sau khi cài toolchain.
+- Flutter 3.47.2 stable và Dart 3.13.2.
 - Material Design 3 từ Flutter Material library; không cài một framework UI riêng.
 - Kiến trúc MVVM với View, ViewModel, Repository và Service.
 - `provider` cho dependency injection và `go_router` cho navigation theo khuyến nghị Flutter.
@@ -77,3 +77,4 @@ abstract interface class MusicProvider {
 - Giấy phép dự án.
 - Application id chính thức.
 - Audio package sau spike kỹ thuật.
+- `dev.yuzu.yuzu` hiện là application id phát triển; phải chốt trước public release.

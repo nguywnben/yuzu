@@ -8,16 +8,16 @@
 
 ## Task 2 — Android toolchain
 
-- [ ] Cài Flutter stable, Dart, Java và Android SDK/tooling.
-- [ ] `flutter doctor -v` không có Android blocker.
+- [x] Cài Flutter stable, Dart, Java và Android SDK/tooling.
+- [x] `flutter doctor -v` không có Android blocker.
 - [ ] Có emulator hoặc thiết bị Android được nhận diện, nếu môi trường hỗ trợ.
 - Dependencies: Task 1.
 
 ## Task 3 — Flutter scaffold
 
-- [ ] Tạo project Android/iOS scaffold nhưng chỉ cấu hình/build Android.
-- [ ] Formatter, analyzer, template test và debug APK pass.
-- [ ] `pubspec.yaml` ghi nhận phiên bản/dependency thực tế.
+- [x] Tạo project Android/iOS scaffold nhưng chỉ cấu hình/build Android.
+- [x] Formatter, analyzer, template test và debug APK pass.
+- [x] `pubspec.yaml` ghi nhận phiên bản/dependency thực tế.
 - Dependencies: Task 2.
 
 ## Task 4 — Media contracts

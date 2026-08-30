@@ -17,12 +17,12 @@ Dựng nền tảng Flutter Android và một vertical slice nghe nhạc hoàn c
 ### Phase 1: Foundation
 
 - [x] Task 1: Lưu product one-pager, capability map, spec và constraints.
-- [ ] Task 2: Cài và xác minh Flutter/Android toolchain.
-- [ ] Task 3: Tạo Flutter project và baseline format/analyze/test/build.
+- [x] Task 2: Cài và xác minh Flutter/Android toolchain.
+- [x] Task 3: Tạo Flutter project và baseline format/analyze/test/build.
 
 ### Checkpoint: Foundation
 
-- [ ] `flutter doctor -v` không có lỗi chặn Android.
+- [x] `flutter doctor -v` không có lỗi chặn Android.
 - [ ] Counter-template replacement build và test sạch.
 
 ### Phase 2: Contracts and Design System
