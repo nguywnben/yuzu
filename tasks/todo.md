@@ -22,9 +22,9 @@
 
 ## Task 4 — Media contracts
 
-- [ ] Test thất bại trước implementation cho `Track`, `MusicProvider` và queue state.
-- [ ] Model bất biến, không phụ thuộc Flutter widget hay provider cụ thể.
-- [ ] Focused tests và full suite pass.
+- [x] Test thất bại trước implementation cho `Track`, `MusicProvider` và queue state.
+- [x] Model bất biến, không phụ thuộc Flutter widget hay provider cụ thể.
+- [x] Focused tests và full suite pass.
 - Dependencies: Task 3.
 
 ## Task 5 — Fake catalog
