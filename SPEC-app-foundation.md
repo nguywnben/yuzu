@@ -10,7 +10,7 @@ Tạo nền tảng Flutter Android có thể build, test và mở rộng an toà
 - Material Design 3 từ Flutter Material library; không cài một framework UI riêng.
 - Kiến trúc MVVM với View, ViewModel, Repository và Service.
 - `provider` cho dependency injection và `go_router` cho navigation theo khuyến nghị Flutter.
-- Audio package chỉ được chọn sau một spike có kiểm thử Android và kiểm tra license.
+- `just_audio` 0.10.6 cho playback engine và `audio_service` 0.18.19 cho background media session; quyết định và license được ghi tại `docs/decisions/0001-android-audio-stack.md`.
 
 ## Commands
 
@@ -76,5 +76,4 @@ abstract interface class MusicProvider {
 
 - Giấy phép dự án.
 - Application id chính thức.
-- Audio package sau spike kỹ thuật.
 - `dev.yuzu.yuzu` hiện là application id phát triển; phải chốt trước public release.

@@ -24,8 +24,8 @@ Last reviewed: 2026-08-30
 
 | Metric | Baseline | Direction |
 |---|---|---|
-| Test coverage | 96.0% line coverage (525/547), 2026-08-30 | Không thấp hơn 90%; siết dần khi CI được thêm |
-| APK size | 157.8 MiB debug universal APK, 2026-08-30 | Chỉ để theo dõi; đặt budget bằng release split APK sau |
+| Test coverage | 96.2% line coverage (641/666), 2026-08-30 | Không thấp hơn 90%; siết dần khi CI được thêm |
+| APK size | 168.0 MiB debug universal APK, 2026-08-30 | Chỉ để theo dõi; đặt budget bằng release split APK sau |
 
 ## Exceptions
 

@@ -41,12 +41,12 @@ Dựng nền tảng Flutter Android và một vertical slice nghe nhạc hoàn c
 - [x] Task 7: Home và Search với loading/empty/error states.
 - [x] Task 8: Playback state, queue và controls theo TDD.
 - [x] Task 9: Mini-player và full player Material 3.
-- [ ] Task 10: Android audio/media-session adapter bằng audio kiểm thử.
+- [x] Task 10: Android audio/media-session adapter bằng audio kiểm thử.
 
 ### Checkpoint: Vertical Slice
 
 - [x] Luồng Home/Search → Track → Player hoạt động end-to-end.
-- [ ] Background playback và notification được kiểm tra trên Android.
+- [x] Background playback và notification được kiểm tra trên Android.
 
 ### Phase 4: Verification
 

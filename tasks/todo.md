@@ -10,7 +10,7 @@
 
 - [x] Cài Flutter stable, Dart, Java và Android SDK/tooling.
 - [x] `flutter doctor -v` không có Android blocker.
-- [ ] Có emulator hoặc thiết bị Android được nhận diện, nếu môi trường hỗ trợ.
+- [x] Có emulator hoặc thiết bị Android được nhận diện, nếu môi trường hỗ trợ.
 - Dependencies: Task 1.
 
 ## Task 3 — Flutter scaffold
@@ -64,9 +64,9 @@
 
 ## Task 10 — Android audio adapter
 
-- [ ] Audio kiểm thử hợp pháp phát được trên Android.
-- [ ] Background playback và notification controls hoạt động.
-- [ ] Plugin/license decision được ghi lại.
+- [x] Audio kiểm thử hợp pháp phát được trên Android.
+- [x] Background playback và notification controls hoạt động.
+- [x] Plugin/license decision được ghi lại.
 - Dependencies: Tasks 8, 9.
 
 ## Task 11 — Verification
