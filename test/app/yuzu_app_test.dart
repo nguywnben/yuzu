@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:yuzu/app/yuzu_app.dart';
+import 'package:yuzu/data/fake/fake_music_provider.dart';
 
 void main() {
   testWidgets('uses Material 3 light and dark themes', (tester) async {
-    await tester.pumpWidget(const YuzuApp());
+    await tester.pumpWidget(_testApp());
+    await tester.pumpAndSettle();
 
     final app = tester.widget<MaterialApp>(find.byType(MaterialApp));
 
@@ -17,9 +19,10 @@ void main() {
     tester.platformDispatcher.platformBrightnessTestValue = Brightness.dark;
     addTearDown(tester.platformDispatcher.clearPlatformBrightnessTestValue);
 
-    await tester.pumpWidget(const YuzuApp());
+    await tester.pumpWidget(_testApp());
+    await tester.pumpAndSettle();
 
-    final context = tester.element(find.text('Listen again'));
+    final context = tester.element(find.text('Quick picks'));
     expect(Theme.of(context).brightness, Brightness.dark);
   });
 
@@ -31,10 +34,11 @@ void main() {
     addTearDown(tester.view.resetPhysicalSize);
     addTearDown(tester.view.resetDevicePixelRatio);
 
-    await tester.pumpWidget(const YuzuApp());
+    await tester.pumpWidget(_testApp());
+    await tester.pumpAndSettle();
 
     expect(find.byType(NavigationBar), findsOneWidget);
-    expect(find.text('Listen again'), findsOneWidget);
+    expect(find.text('Quick picks'), findsOneWidget);
 
     await tester.tap(find.byKey(const Key('destination-search')));
     await tester.pumpAndSettle();
@@ -51,9 +55,12 @@ void main() {
     addTearDown(tester.view.resetPhysicalSize);
     addTearDown(tester.view.resetDevicePixelRatio);
 
-    await tester.pumpWidget(const YuzuApp());
+    await tester.pumpWidget(_testApp());
+    await tester.pumpAndSettle();
 
     expect(find.byType(NavigationRail), findsOneWidget);
     expect(find.byType(NavigationBar), findsNothing);
   });
 }
+
+Widget _testApp() => YuzuApp(musicProvider: FakeMusicProvider());

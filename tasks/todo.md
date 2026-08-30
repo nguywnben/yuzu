@@ -43,8 +43,8 @@
 
 ## Task 7 — Catalog vertical slice
 
-- [ ] Home và Search dùng fake provider qua ViewModel/repository.
-- [ ] Có loading, empty và error states.
+- [x] Home và Search dùng fake provider qua ViewModel/repository.
+- [x] Có loading, empty và error states.
 - [ ] Chọn track phát một playback command.
 - Dependencies: Tasks 5, 6.
 
