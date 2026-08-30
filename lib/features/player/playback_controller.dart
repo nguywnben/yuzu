@@ -1,9 +1,18 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 
 import '../../domain/media/playback_queue.dart';
 import '../../domain/media/track.dart';
+import 'playback_driver.dart';
 
 final class PlaybackController extends ChangeNotifier {
+  PlaybackController(this._driver) {
+    _stateSubscription = _driver.states.listen(_applyDriverState);
+  }
+
+  final PlaybackDriver _driver;
+  late final StreamSubscription<PlaybackDriverState> _stateSubscription;
   PlaybackQueue _queue = PlaybackQueue.empty();
   bool _isPlaying = false;
 
@@ -25,31 +34,43 @@ final class PlaybackController extends ChangeNotifier {
     }
 
     _queue = PlaybackQueue.fromTracks(nextQueue, startIndex: startIndex);
-    _isPlaying = true;
     notifyListeners();
+    unawaited(_driver.loadQueue(nextQueue, startIndex: startIndex));
   }
 
   void togglePlayPause() {
     if (currentTrack == null) {
       return;
     }
-    _isPlaying = !_isPlaying;
-    notifyListeners();
+    unawaited(_isPlaying ? _driver.pause() : _driver.play());
   }
 
   void skipNext() {
     if (!canSkipNext) {
       return;
     }
-    _queue = _queue.moveNext();
-    notifyListeners();
+    unawaited(_driver.skipNext());
   }
 
   void skipPrevious() {
     if (!canSkipPrevious) {
       return;
     }
-    _queue = _queue.movePrevious();
+    unawaited(_driver.skipPrevious());
+  }
+
+  void _applyDriverState(PlaybackDriverState state) {
+    final index = state.currentIndex;
+    if (index != null && index >= 0 && index < _queue.tracks.length) {
+      _queue = PlaybackQueue.fromTracks(_queue.tracks, startIndex: index);
+    }
+    _isPlaying = state.isPlaying;
     notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    unawaited(_stateSubscription.cancel());
+    super.dispose();
   }
 }

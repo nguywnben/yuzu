@@ -2,13 +2,16 @@ import 'package:flutter/material.dart';
 
 import '../data/fake/fake_music_provider.dart';
 import '../domain/media/music_provider.dart';
+import '../features/player/memory_playback_driver.dart';
+import '../features/player/playback_driver.dart';
 import 'shell/yuzu_shell.dart';
 import 'theme/yuzu_theme.dart';
 
 class YuzuApp extends StatelessWidget {
-  const YuzuApp({super.key, this.musicProvider});
+  const YuzuApp({super.key, this.musicProvider, this.playbackDriver});
 
   final MusicProvider? musicProvider;
+  final PlaybackDriver? playbackDriver;
 
   @override
   Widget build(BuildContext context) {
@@ -22,6 +25,7 @@ class YuzuApp extends StatelessWidget {
         musicProvider:
             musicProvider ??
             FakeMusicProvider(responseDelay: const Duration(milliseconds: 250)),
+        playbackDriver: playbackDriver ?? MemoryPlaybackDriver(),
       ),
     );
   }

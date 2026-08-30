@@ -9,12 +9,18 @@ import '../../features/library/library_screen.dart';
 import '../../features/player/full_player.dart';
 import '../../features/player/mini_player.dart';
 import '../../features/player/playback_controller.dart';
+import '../../features/player/playback_driver.dart';
 import '../../features/search/search_screen.dart';
 
 class YuzuShell extends StatefulWidget {
-  const YuzuShell({super.key, required this.musicProvider});
+  const YuzuShell({
+    super.key,
+    required this.musicProvider,
+    required this.playbackDriver,
+  });
 
   final MusicProvider musicProvider;
+  final PlaybackDriver playbackDriver;
 
   @override
   State<YuzuShell> createState() => _YuzuShellState();
@@ -47,7 +53,8 @@ class _YuzuShellState extends State<YuzuShell> {
   @override
   void initState() {
     super.initState();
-    _playbackController = PlaybackController()..addListener(_refresh);
+    _playbackController = PlaybackController(widget.playbackDriver)
+      ..addListener(_refresh);
   }
 
   void _refresh() {
