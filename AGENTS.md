@@ -1,5 +1,5 @@
 # Agent Instructions
 
-Đọc `CONSTRAINTS.md`, `CAPABILITY_MAP.md` và spec module liên quan trước khi viết code. Không làm yếu constraint để một thay đổi vượt qua kiểm tra.
+Read `CONSTRAINTS.md`, `CAPABILITY_MAP.md`, and the relevant module specification before writing code. Do not weaken a constraint to make a change pass its checks.
 
-Yuzu là clean-room implementation. Metrolist, ArchiveTune và các dự án tương tự chỉ được dùng để tham khảo feature inventory, hành vi và failure mode; không copy hoặc port mã, asset, UI, test hay cấu trúc implementation.
+Yuzu is a clean-room implementation. Metrolist, ArchiveTune, and similar projects may only be used to study feature inventories, behavior, and failure modes; do not copy or port their code, assets, UI, tests, or implementation structure.

@@ -1,14 +1,14 @@
 # Yuzu
 
-Yuzu là ứng dụng nghe nhạc mã nguồn mở, Android-first, được xây dựng bằng Flutter và Material Design 3.
+Yuzu is an open-source, Android-first music player built with Flutter and Material Design 3.
 
-Hiện dự án đang ở giai đoạn nền tảng. Milestone đầu tiên dùng catalog và playback giả lập để hoàn thiện kiến trúc, giao diện và kiểm thử trước khi kết nối backend YouTube Music.
+The project is currently in its foundation phase. The first milestone uses a fake catalog and test playback to establish the architecture, interface, and test coverage before connecting a YouTube Music backend.
 
-## Trạng thái hỗ trợ
+## Platform Support
 
-- Android: nền tảng phát triển và phân phối APK chính.
-- iOS: giữ scaffold và code đa nền tảng; cần macOS/Xcode để build, ký và kiểm thử trong tương lai.
-- Đăng nhập: không thuộc MVP.
+- Android: the primary development platform and APK distribution target.
+- iOS: the scaffold and cross-platform code are retained; macOS and Xcode will be required to build, sign, and test it in the future.
+- Sign-in: not included in the MVP.
 
 ## Toolchain
 
@@ -16,7 +16,7 @@ Hiện dự án đang ở giai đoạn nền tảng. Milestone đầu tiên dùn
 - Dart 3.13.2
 - Android SDK 36
 
-## Kiểm tra dự án
+## Project Checks
 
 ```powershell
 flutter analyze
@@ -25,12 +25,12 @@ flutter test integration_test/critical_flow_test.dart -d <device-id>
 flutter build apk --debug
 ```
 
-Xem [SPEC-app-foundation.md](SPEC-app-foundation.md), [CAPABILITY_MAP.md](CAPABILITY_MAP.md) và [tasks/plan.md](tasks/plan.md) để biết kiến trúc và lộ trình hiện tại.
+See [SPEC-app-foundation.md](SPEC-app-foundation.md), [CAPABILITY_MAP.md](CAPABILITY_MAP.md), and [tasks/plan.md](tasks/plan.md) for the current architecture and roadmap.
 
 ## Clean-room
 
-Các ứng dụng tương tự chỉ được dùng để tham khảo hành vi và luồng sử dụng. Không sao chép mã nguồn, tài nguyên, chuỗi giao diện, test hoặc cấu trúc triển khai của dự án khác.
+Similar applications may only be used to study behavior and user flows. Do not copy source code, assets, interface text, tests, or implementation structures from other projects.
 
-## Giấy phép
+## License
 
-Yuzu được phát hành theo [GNU General Public License v3.0](LICENSE).
+Yuzu is released under the [GNU General Public License v3.0](LICENSE).

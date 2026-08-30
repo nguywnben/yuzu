@@ -4,29 +4,29 @@ Last reviewed: 2026-08-30
 
 ## Floor
 
-- Không thêm suppression để che lỗi analyzer hoặc compiler.
-- Không có stub chưa triển khai, empty catch hoặc debug output trong code bàn giao.
-- Không skip, xóa test hoặc làm yếu assertion để lấy màu xanh.
-- Không đưa secret, cookie, token hoặc credential vào source.
-- Không làm yếu file này để một thay đổi vượt qua kiểm tra.
-- Không copy mã, asset, UI hoặc chuỗi văn bản từ Metrolist, ArchiveTune hay dự án tham khảo khác.
+- Do not add suppressions to hide analyzer or compiler errors.
+- Do not deliver unimplemented stubs, empty catch blocks, or debug output.
+- Do not skip or delete tests, or weaken assertions to make checks pass.
+- Do not commit secrets, cookies, tokens, or credentials to source control.
+- Do not weaken this file to make a change pass its checks.
+- Do not copy code, assets, UI, or text from Metrolist, ArchiveTune, or any other reference project.
 
 ## Enforced
 
 | Dimension | Rule | Checked by | Runs at |
 |---|---|---|---|
-| Format | Không có file Dart lệch formatter | `dart format --output=none --set-exit-if-changed .` | task end |
-| Static analysis | Không có analyzer finding | `flutter analyze` | task end |
-| Tests | Không có test thất bại hoặc bị skip | `flutter test` | task end |
-| Android build | Debug APK phải build được | `flutter build apk --debug` | checkpoint |
+| Format | All Dart files match the formatter | `dart format --output=none --set-exit-if-changed .` | task end |
+| Static analysis | No analyzer findings | `flutter analyze` | task end |
+| Tests | No failed or skipped tests | `flutter test` | task end |
+| Android build | The debug APK must build successfully | `flutter build apk --debug` | checkpoint |
 
 ## Measured, Not Yet Enforced
 
 | Metric | Baseline | Direction |
 |---|---|---|
-| Test coverage | 96.2% line coverage (641/666), 2026-08-30 | Không thấp hơn 90%; siết dần khi CI được thêm |
-| APK size | 188.4 MiB debug universal APK, 2026-08-30 | Chỉ để theo dõi; đặt budget bằng release split APK sau |
+| Test coverage | 96.2% line coverage (641/666), 2026-08-30 | Keep above 90%; tighten gradually after CI is added |
+| APK size | 188.4 MiB debug universal APK, 2026-08-30 | Track only for now; set a budget using release split APKs later |
 
 ## Exceptions
 
-Không có. Mọi exception mới phải có lý do, owner và ngày hết hạn trước khi được thêm.
+None. Every new exception must include a rationale, an owner, and an expiration date before it is added.
