@@ -72,8 +72,8 @@
 ## Task 11 — Verification
 
 - [ ] Critical flow có integration test.
-- [ ] Format, analyze, tests và debug APK pass.
-- [ ] Coverage/APK-size baseline được ghi vào `CONSTRAINTS.md`.
+- [x] Format, analyze, tests và debug APK pass.
+- [x] Coverage/APK-size baseline được ghi vào `CONSTRAINTS.md`.
 - Dependencies: Tasks 7–10.
 
 ## Task 12 — Human checkpoint

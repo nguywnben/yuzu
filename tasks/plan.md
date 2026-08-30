@@ -45,7 +45,7 @@ Dựng nền tảng Flutter Android và một vertical slice nghe nhạc hoàn c
 
 ### Checkpoint: Vertical Slice
 
-- [ ] Luồng Home/Search → Track → Player hoạt động end-to-end.
+- [x] Luồng Home/Search → Track → Player hoạt động end-to-end.
 - [ ] Background playback và notification được kiểm tra trên Android.
 
 ### Phase 4: Verification
