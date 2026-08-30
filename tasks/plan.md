@@ -2,111 +2,111 @@
 
 ## Overview
 
-Dựng nền tảng Flutter Android và một vertical slice nghe nhạc hoàn chỉnh bằng fake provider/audio kiểm thử, đóng Milestone 0 bằng kiểm thử trên thiết bị, sau đó kiểm chứng catalog YouTube Music không đăng nhập qua một adapter clean-room tách biệt. Playback YouTube thật chỉ bắt đầu sau khi catalog và rủi ro upstream đã được xác nhận.
+Build the Flutter Android foundation and a complete music-listening vertical slice with a fake provider and test audio. Close Milestone 0 with on-device verification, then validate a guest YouTube Music catalog through an isolated clean-room adapter. Real YouTube playback begins only after the catalog and upstream risks have been validated.
 
 ## Architecture Decisions
 
-- Android-first nhưng giữ domain/UI độc lập nền tảng để không khóa đường iOS.
-- MVVM và repository/service separation theo hướng dẫn Flutter.
-- Material 3 là design system mặc định; component tùy biến phải dùng semantic tokens.
-- Provider và playback là contract-first; upstream YouTube không xuất hiện trong feature UI.
-- Catalog provider và stream resolver là hai boundary riêng; catalog thành công không đồng nghĩa playback đã sẵn sàng.
-- Clean-room: dự án tham khảo chỉ cung cấp feature inventory, hành vi và failure mode; không port mã, asset, UI, test hoặc cấu trúc implementation.
-- MVP không đăng nhập, không đồng bộ tài khoản và không tải nhạc ngoại tuyến.
+- Android-first, while keeping the domain and UI platform-independent so the iOS path remains open.
+- MVVM with repository/service separation, following Flutter guidance.
+- Material 3 is the default design system; custom components must use semantic tokens.
+- Providers and playback are contract-first; upstream YouTube details do not appear in feature UI.
+- The catalog provider and stream resolver are separate boundaries; a working catalog does not mean playback is ready.
+- Clean-room: reference projects provide only feature inventories, behavior, and failure modes; do not port code, assets, UI, tests, or implementation structures.
+- The MVP has no sign-in, account sync, or offline downloads.
 
 ## Task List
 
 ### Phase 1: Foundation
 
-- [x] Task 1: Lưu product one-pager, capability map, spec và constraints.
-- [x] Task 2: Cài và xác minh Flutter/Android toolchain.
-- [x] Task 3: Tạo Flutter project và baseline format/analyze/test/build.
+- [x] Task 1: Record the product one-pager, capability map, specification, and constraints.
+- [x] Task 2: Install and verify the Flutter/Android toolchain.
+- [x] Task 3: Create the Flutter project and establish the format/analyze/test/build baseline.
 
 ### Checkpoint: Foundation
 
-- [x] `flutter doctor -v` không có lỗi chặn Android.
-- [x] Counter-template replacement build và test sạch.
+- [x] `flutter doctor -v` reports no Android blockers.
+- [x] The counter-template replacement builds and tests cleanly.
 
 ### Phase 2: Contracts and Design System
 
-- [x] Task 4: Viết test và triển khai media domain/provider contract.
-- [x] Task 5: Viết test và triển khai fake catalog repository.
-- [x] Task 6: Xây Material 3 theme/tokens và app shell có test.
+- [x] Task 4: Test and implement the media domain/provider contract.
+- [x] Task 5: Test and implement the fake catalog repository.
+- [x] Task 6: Build Material 3 themes/tokens and a tested application shell.
 
 ### Checkpoint: Contracts
 
-- [x] Domain và fake provider tests pass.
-- [x] Light/dark app shell render ở kích thước phone và tablet.
+- [x] Domain and fake-provider tests pass.
+- [x] The light/dark application shell renders at phone and tablet sizes.
 
 ### Phase 3: First Vertical Slice
 
-- [x] Task 7: Home và Search với loading/empty/error states.
-- [x] Task 8: Playback state, queue và controls theo TDD.
-- [x] Task 9: Mini-player và full player Material 3.
-- [x] Task 10: Android audio/media-session adapter bằng audio kiểm thử.
+- [x] Task 7: Build Home and Search with loading, empty, and error states.
+- [x] Task 8: Build playback state, queue, and controls with TDD.
+- [x] Task 9: Build Material 3 mini-player and full-player interfaces.
+- [x] Task 10: Build the Android audio/media-session adapter with test audio.
 
 ### Checkpoint: Vertical Slice
 
-- [x] Luồng Home/Search → Track → Player hoạt động end-to-end.
-- [x] Background playback và notification được kiểm tra trên Android.
+- [x] The Home/Search → Track → Player flow works end to end.
+- [x] Background playback and notifications are verified on Android.
 
 ### Phase 4: Verification
 
-- [x] Task 11: Integration test, accessibility pass và baseline coverage.
-- [ ] Task 12: Build debug APK và review milestone.
+- [x] Task 11: Add integration tests, pass accessibility checks, and establish baseline coverage.
+- [ ] Task 12: Build the debug APK and review the milestone.
 
 ### Checkpoint: Milestone 0
 
-- [x] Critical flow chạy trên thiết bị Android thật hoặc emulator.
-- [ ] Người dùng xác nhận APK, navigation và player UI đủ tốt để chuyển sang dữ liệu thật.
+- [x] The critical flow runs on a physical Android device or emulator.
+- [ ] The user confirms that the APK, navigation, and player UI are ready to move to live data.
 
 ### Phase 5: Live Catalog Feasibility
 
-- [ ] Task 13: Viết spec và decision record cho YouTube Music adapter không đăng nhập.
-- [ ] Task 14: Định nghĩa catalog transport, DTO boundary và error taxonomy bằng fixtures clean-room.
-- [ ] Task 15: Triển khai live Search theo TDD sau `MusicProvider`, có timeout và lỗi có kiểu.
-- [ ] Task 16: Triển khai live Home và continuation theo TDD.
-- [ ] Task 17: Triển khai album detail theo TDD.
-- [ ] Task 18: Triển khai artist detail theo TDD.
-- [ ] Task 19: Triển khai playlist detail theo TDD.
+- [ ] Task 13: Write the specification and decision record for a guest YouTube Music adapter.
+- [ ] Task 14: Define the catalog transport, DTO boundary, and error taxonomy with clean-room fixtures.
+- [ ] Task 15: Implement live Search behind `MusicProvider` with TDD, timeouts, and typed errors.
+- [ ] Task 16: Implement live Home and continuation handling with TDD.
+- [ ] Task 17: Implement album details with TDD.
+- [ ] Task 18: Implement artist details with TDD.
+- [ ] Task 19: Implement playlist details with TDD.
 
 ### Checkpoint: Live Catalog
 
-- [ ] Fake provider và live provider thay thế được qua dependency injection mà UI không đổi.
-- [ ] Search/Home hoạt động với mạng thật; loading, empty, malformed response, timeout và upstream rejection đều được kiểm thử.
-- [ ] Không có cookie, token, credential hoặc JSON người dùng trong source/test fixture.
+- [ ] Fake and live providers can be swapped through dependency injection without changing the UI.
+- [ ] Search and Home work against the live network; loading, empty, malformed-response, timeout, and upstream-rejection states are tested.
+- [ ] Source and test fixtures contain no cookies, tokens, credentials, or user JSON.
 
 ### Phase 6: Playback Feasibility
 
-- [ ] Task 20: Viết spec riêng cho stream resolver, URL expiry, headers và failure recovery.
-- [ ] Task 21: Làm playback spike cho một track công khai, không đăng nhập và không download.
-- [ ] Task 22: Nối resolver vào queue/audio adapter hiện tại, giữ fake playback làm fallback phát triển.
+- [ ] Task 20: Write a dedicated specification for the stream resolver, URL expiry, headers, and failure recovery.
+- [ ] Task 21: Build a playback spike for one public track without sign-in or downloads.
+- [ ] Task 22: Connect the resolver to the existing queue/audio adapter while retaining fake playback as a development fallback.
 
 ### Checkpoint: Live Playback
 
-- [ ] Một track có thể đi từ Search → queue → Media3 và phát trên Android.
-- [ ] URL hết hạn, nội dung bị chặn, mạng mất và upstream thay đổi đều tạo lỗi hữu ích, không crash.
-- [ ] Format, analyze, unit/widget/integration tests và debug APK đều pass.
+- [ ] A track can travel from Search → queue → Media3 and play on Android.
+- [ ] Expired URLs, blocked content, network loss, and upstream changes produce useful errors without crashing.
+- [ ] Format, analyze, unit/widget/integration tests, and the debug APK all pass.
 
 ### Phase 7: MVP Product Slice
 
-- [ ] Task 23: Hoàn thiện catalog UI với ảnh thật, pagination và retry Material 3.
-- [ ] Task 24: Thêm thư viện cục bộ tối thiểu: yêu thích và lịch sử nghe.
-- [ ] Task 25: Quality pass cho accessibility, privacy, logging đã làm sạch và APK phân phối thử.
+- [ ] Task 23: Polish the catalog UI with live artwork, pagination, and Material 3 retry states.
+- [ ] Task 24: Add a minimal local library with favorites and listening history.
+- [ ] Task 25: Complete the quality pass for accessibility, privacy, redacted logging, and a trial-distribution APK.
 
 ## Risks and Mitigations
 
 | Risk | Impact | Mitigation |
 |---|---|---|
-| Android toolchain chưa tồn tại | High | Cài trước mọi code và dừng nếu `flutter doctor` còn blocker |
-| Audio plugin không ổn định | High | Spike riêng, fake playback trước, dependency audit |
-| Innertube là API nội bộ, có thể đổi hoặc chặn | High | Feasibility spike sớm, adapter độc lập, fixtures và error taxonomy; giữ fake provider |
-| Playback trực tiếp có rủi ro điều khoản/chính sách | High | Decision record trước implementation, không tuyên bố đây là API chính thức, tách resolver để có thể thay thế |
-| PO token/cipher làm playback phức tạp | High | Không trộn vào catalog; spike một track và dừng tại checkpoint nếu không ổn định |
-| UI mở rộng thiếu nhất quán | Medium | Material tokens và component gallery từ đầu |
-| iOS bị khóa bởi Android code | Medium | Platform adapter boundary, không dùng Android API trong domain/UI |
+| Android toolchain is unavailable | High | Install it before writing code and stop if `flutter doctor` still reports a blocker |
+| Audio plugin is unstable | High | Run an isolated spike, build fake playback first, and audit dependencies |
+| Innertube is an internal API that may change or block access | High | Run an early feasibility spike, isolate the adapter, use fixtures and an error taxonomy, and retain the fake provider |
+| Direct playback carries terms-of-service and policy risk | High | Record the decision before implementation, do not present it as an official API, and isolate the replaceable resolver |
+| PO tokens or ciphers complicate playback | High | Keep them out of the catalog, spike one track, and stop at the checkpoint if the result is unstable |
+| UI becomes inconsistent as it grows | Medium | Establish Material tokens and a component gallery early |
+| Android code blocks the iOS path | Medium | Maintain a platform-adapter boundary and keep Android APIs out of the domain and UI layers |
 
 ## Open Questions
 
-- License và application id được chốt trước public release, không chặn debug milestone.
-- Trước Task 21 cần chốt mức rủi ro chính sách mà dự án chấp nhận đối với playback YouTube trực tiếp.
+- Finalize the application ID before the public release; it does not block the debug milestone. The license is already GNU GPL v3.0.
+- Before Task 21, decide what policy risk the project will accept for direct YouTube playback.

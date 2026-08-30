@@ -5,35 +5,35 @@
 
 ## Context
 
-Milestone 0 cần phát audio hợp pháp trên Android, tiếp tục khi ứng dụng ở nền và nhận lệnh từ media notification/headset. UI và domain phải giữ độc lập nền tảng để không khóa đường triển khai iOS sau này.
+Milestone 0 requires legally sourced audio playback on Android that continues while the application is in the background and responds to media-notification and headset commands. The UI and domain layers must remain platform-independent so they do not block a future iOS implementation.
 
-Yuzu chưa tích hợp YouTube Music ở milestone này. Audio dùng để kiểm chứng pipeline không được lấy từ dự án tham khảo hoặc một bản ghi có bản quyền không rõ ràng.
+Yuzu does not integrate YouTube Music in this milestone. Audio used to verify the pipeline must not come from a reference project or a recording with unclear copyright status.
 
 ## Decision
 
-- Dùng [`just_audio` 0.10.6](https://pub.dev/packages/just_audio) làm playback engine.
-- Dùng [`audio_service` 0.18.19](https://pub.dev/packages/audio_service) làm media session, foreground service và notification controls.
-- Khởi tạo `AudioService` đúng một lần ở application startup. `YuzuAudioHandler` là adapter duy nhất biết hai plugin; UI chỉ phụ thuộc `PlaybackDriver`.
-- Android khai báo foreground service loại `mediaPlayback`, media-button receiver và wake lock theo hướng dẫn của `audio_service`.
-- Test audio là WAV PCM 16-bit dài 30 giây do mã Yuzu tự tổng hợp và ghi vào system cache lúc chạy. Repository không chứa hay tải media asset của bên thứ ba.
-- Giữ cấu hình iOS `UIBackgroundModes/audio` trong scaffold, nhưng iOS chưa được tuyên bố hỗ trợ cho tới khi build và kiểm thử trên macOS/thiết bị iOS.
+- Use [`just_audio` 0.10.6](https://pub.dev/packages/just_audio) as the playback engine.
+- Use [`audio_service` 0.18.19](https://pub.dev/packages/audio_service) for the media session, foreground service, and notification controls.
+- Initialize `AudioService` exactly once at application startup. `YuzuAudioHandler` is the only adapter that knows about both plugins; the UI depends only on `PlaybackDriver`.
+- Declare an Android foreground service with the `mediaPlayback` type, a media-button receiver, and a wake lock as directed by `audio_service`.
+- Generate a 30-second, 16-bit PCM WAV test tone entirely with Yuzu code and write it to the system cache at runtime. The repository neither contains nor downloads third-party media assets.
+- Retain the iOS `UIBackgroundModes/audio` configuration in the scaffold, but do not claim iOS support until the application has been built and tested on macOS and an iOS device.
 
 ## License review
 
-- [`just_audio` license](https://pub.dev/packages/just_audio/license): Apache-2.0 và MIT.
+- [`just_audio` license](https://pub.dev/packages/just_audio/license): Apache-2.0 and MIT.
 - [`audio_service` license](https://pub.dev/packages/audio_service/license): MIT.
-- Các giấy phép này cho phép dùng trong dự án mã nguồn mở; attribution/license notices của dependency phải được giữ trong bản phân phối theo điều khoản tương ứng.
-- WAV kiểm thử được tạo hoàn toàn từ thuật toán của Yuzu, không có license media bên ngoài.
+- These licenses permit use in an open-source project; dependency attribution and license notices must be preserved in distributions according to their respective terms.
+- The test WAV is generated entirely by a Yuzu algorithm and carries no external media license.
 
 ## Alternatives considered
 
-- `just_audio_background`: cấu hình đơn giản hơn nhưng còn ở trạng thái beta và ít quyền kiểm soát queue/media session hơn yêu cầu production của Yuzu.
-- Tự viết Android Media3/native player: tăng đáng kể mã nền tảng và khiến đường iOS phải nhân đôi sớm, không phù hợp milestone đầu.
-- Đóng gói một bài nhạc mẫu: thêm rủi ro nguồn gốc và license không cần thiết.
+- `just_audio_background`: simpler configuration, but it remains in beta and offers less control over the queue and media session than Yuzu's production target requires.
+- A custom Android Media3/native player: substantially increases platform code and prematurely duplicates the future iOS path, making it unsuitable for the first milestone.
+- A bundled sample song: introduces unnecessary provenance and licensing risks.
 
 ## Consequences
 
-- Android có playback thật, background service và notification controls qua một adapter được cô lập.
-- Domain/widget tests dùng `MemoryPlaybackDriver`, không khởi tạo MethodChannel.
-- Mapper giữa plugin và domain được unit test; lifecycle plugin được kiểm chứng bằng build và Android runtime.
-- Trước khi hỗ trợ iOS cần có máy Mac để build/sign, kiểm tra audio session/interruption, lock-screen controls và background lifecycle.
+- Android has real playback, a background service, and notification controls behind an isolated adapter.
+- Domain and widget tests use `MemoryPlaybackDriver` and do not initialize a `MethodChannel`.
+- Unit tests cover plugin-to-domain mapping; builds and Android runtime checks verify the plugin lifecycle.
+- Supporting iOS will require a Mac for building and signing, plus validation of the audio session, interruptions, lock-screen controls, and background lifecycle.

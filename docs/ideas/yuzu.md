@@ -2,37 +2,36 @@
 
 ## Problem Statement
 
-Làm thế nào để xây dựng một trình nghe nhạc YouTube Music mã nguồn mở cho Android có chất lượng production, giao diện Material Design 3 chỉnh chu và kiến trúc đủ độc lập để backend không chính thức có thể được thay thế khi thay đổi?
+How can we build a production-quality, open-source YouTube Music player for Android with a polished Material Design 3 interface and an architecture independent enough to replace the unofficial backend when it changes?
 
 ## Recommended Direction
 
-Yuzu là ứng dụng Flutter Android-first, phát hành dưới dạng APK ngoài store. MVP hoạt động không cần tài khoản và ưu tiên một trải nghiệm nghe nhạc cốt lõi ổn định: khám phá, tìm kiếm, phát nhạc, hàng đợi và thư viện cục bộ.
+Yuzu is an Android-first Flutter application distributed as an APK outside app stores. The MVP works without an account and prioritizes a stable core listening experience: discovery, search, playback, queue management, and a local library.
 
-Phần giao diện, domain và playback không được biết chi tiết YouTube Music. Mọi nguồn dữ liệu phải đi qua `MusicProvider`; milestone đầu dùng provider giả và audio kiểm thử hợp pháp, sau đó mới thêm adapter YouTube Music ẩn danh.
+The UI, domain, and playback layers must not know YouTube Music implementation details. Every data source must go through `MusicProvider`; the first milestone uses a fake provider and legally generated test audio before adding an anonymous YouTube Music adapter.
 
 ## Key Assumptions to Validate
 
-- [ ] Nguồn YouTube Music ẩn danh đủ ổn định cho Home, Search và metadata.
-- [ ] Audio stack Flutter đáp ứng phát nền, notification và khôi phục queue trên Android.
-- [ ] Kiến trúc provider độc lập giữ phần lớn ứng dụng hoạt động khi upstream thay đổi.
+- [ ] Anonymous YouTube Music access is stable enough for Home, Search, and metadata.
+- [ ] The Flutter audio stack supports background playback, notifications, and queue restoration on Android.
+- [ ] The provider-independent architecture keeps most of the application working when the upstream service changes.
 
 ## MVP Scope
 
-- Android APK, không đăng nhập.
-- Home, Search và trang chi tiết cơ bản.
-- Mini-player, full player, queue và media controls Android.
-- Library cục bộ: yêu thích, playlist và lịch sử.
-- Material Design 3 sáng/tối, accessibility và responsive layout.
-- Kiểm thử unit, widget và integration cho luồng cốt lõi.
+- Android APK with no sign-in.
+- Home, Search, and basic detail pages.
+- Mini-player, full player, queue, and Android media controls.
+- Local library: favorites, playlists, and history.
+- Light and dark Material Design 3 themes, accessibility, and responsive layouts.
+- Unit, widget, and integration tests for core flows.
 
 ## Not Doing
 
-- iOS trong MVP: chưa có macOS/Xcode để build và kiểm thử.
-- Đăng nhập Google: tăng đáng kể rủi ro bảo mật và độ phức tạp.
-- Tải nhạc ngoại tuyến, lyrics nâng cao, equalizer, casting và Android Auto: không cần để chứng minh lát cắt đầu tiên.
-- Sao chép mã, asset, UI hoặc cấu trúc từ Metrolist/ArchiveTune: Yuzu được thiết kế độc lập từ tài liệu nền tảng và hành vi người dùng.
+- iOS in the MVP: macOS and Xcode are not currently available for building and testing.
+- Google sign-in: it substantially increases security risk and complexity.
+- Offline downloads, advanced lyrics, an equalizer, casting, and Android Auto: none are required to validate the first vertical slice.
+- Copying code, assets, UI, or structure from Metrolist or ArchiveTune: Yuzu is designed independently from platform documentation and observed user behavior.
 
 ## Open Questions
 
-- Chọn giấy phép nguồn mở trước bản phát hành công khai đầu tiên.
-- Chọn application id và namespace chính thức trước khi tạo bản release.
+- Choose the official application ID and namespace before producing a release build.
