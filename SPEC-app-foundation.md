@@ -75,6 +75,5 @@ abstract interface class MusicProvider {
 
 ## Open Questions
 
-- Giấy phép dự án.
 - Application id chính thức.
 - `dev.yuzu.yuzu` hiện là application id phát triển; phải chốt trước public release.

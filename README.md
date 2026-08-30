@@ -30,3 +30,7 @@ Xem [SPEC-app-foundation.md](SPEC-app-foundation.md), [CAPABILITY_MAP.md](CAPABI
 ## Clean-room
 
 Các ứng dụng tương tự chỉ được dùng để tham khảo hành vi và luồng sử dụng. Không sao chép mã nguồn, tài nguyên, chuỗi giao diện, test hoặc cấu trúc triển khai của dự án khác.
+
+## Giấy phép
+
+Yuzu được phát hành theo [GNU General Public License v3.0](LICENSE).
