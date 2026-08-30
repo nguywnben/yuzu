@@ -27,9 +27,12 @@ Date: 2026-08-30
 ## Automated Evidence
 
 - `flutter analyze`: no findings.
-- `flutter test`: 47 tests passed.
+- `flutter test`: 50 unit/widget tests passed.
+- `flutter test integration_test/critical_flow_test.dart -d emulator-5554`: one Android end-to-end flow passed, covering Search → queue → mini-player → full player → next track → mini-player.
+- Flutter accessibility guidelines passed for Android tap targets, tappable labels and minimum text contrast.
 - `flutter test --coverage`: 96.2% line coverage (641/666).
-- `flutter build apk --debug`: passed; 168.0 MiB universal debug APK.
+- `flutter build apk --debug`: passed; 188.4 MiB universal debug APK.
+- Debug APK SHA-256: `9156B82FBF7D2316915785B60FB2BE5EDE9187E1469E6ACABA46686814C868EA`.
 - Android `dumpsys`: active Yuzu media session, `PLAYING`/`PAUSED` transitions, queue metadata updates và foreground notification service đều được xác nhận.
 
 ## Not Yet Verified
