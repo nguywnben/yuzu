@@ -36,9 +36,9 @@
 
 ## Task 6 — Material 3 app shell
 
-- [ ] Light/dark theme và semantic tokens tồn tại.
-- [ ] Navigation Home/Search/Library render đúng.
-- [ ] Widget tests bao phủ theme và navigation.
+- [x] Light/dark theme và semantic tokens tồn tại.
+- [x] Navigation Home/Search/Library render đúng.
+- [x] Widget tests bao phủ theme và navigation.
 - Dependencies: Task 3.
 
 ## Task 7 — Catalog vertical slice

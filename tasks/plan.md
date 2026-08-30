@@ -23,18 +23,18 @@ Dựng nền tảng Flutter Android và một vertical slice nghe nhạc hoàn c
 ### Checkpoint: Foundation
 
 - [x] `flutter doctor -v` không có lỗi chặn Android.
-- [ ] Counter-template replacement build và test sạch.
+- [x] Counter-template replacement build và test sạch.
 
 ### Phase 2: Contracts and Design System
 
 - [x] Task 4: Viết test và triển khai media domain/provider contract.
 - [x] Task 5: Viết test và triển khai fake catalog repository.
-- [ ] Task 6: Xây Material 3 theme/tokens và app shell có test.
+- [x] Task 6: Xây Material 3 theme/tokens và app shell có test.
 
 ### Checkpoint: Contracts
 
 - [ ] Domain và fake provider tests pass.
-- [ ] Light/dark app shell render ở kích thước phone và tablet.
+- [x] Light/dark app shell render ở kích thước phone và tablet.
 
 ### Phase 3: First Vertical Slice
 
