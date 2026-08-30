@@ -16,7 +16,7 @@ class HomeScreen extends StatefulWidget {
   });
 
   final MusicProvider musicProvider;
-  final ValueChanged<Track>? onTrackSelected;
+  final TrackSelectionCallback? onTrackSelected;
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -116,7 +116,7 @@ class _HomeSectionView extends StatelessWidget {
   const _HomeSectionView({required this.section, this.onTrackSelected});
 
   final HomeSection section;
-  final ValueChanged<Track>? onTrackSelected;
+  final TrackSelectionCallback? onTrackSelected;
 
   @override
   Widget build(BuildContext context) {
@@ -145,7 +145,7 @@ class _HomeSectionView extends StatelessWidget {
                   track: track,
                   onTap: onTrackSelected == null
                       ? null
-                      : () => onTrackSelected!(track),
+                      : () => onTrackSelected!(track, section.tracks),
                 );
               },
             ),

@@ -33,14 +33,14 @@ Dựng nền tảng Flutter Android và một vertical slice nghe nhạc hoàn c
 
 ### Checkpoint: Contracts
 
-- [ ] Domain và fake provider tests pass.
+- [x] Domain và fake provider tests pass.
 - [x] Light/dark app shell render ở kích thước phone và tablet.
 
 ### Phase 3: First Vertical Slice
 
-- [ ] Task 7: Home và Search với loading/empty/error states.
-- [ ] Task 8: Playback state, queue và controls theo TDD.
-- [ ] Task 9: Mini-player và full player Material 3.
+- [x] Task 7: Home và Search với loading/empty/error states.
+- [x] Task 8: Playback state, queue và controls theo TDD.
+- [x] Task 9: Mini-player và full player Material 3.
 - [ ] Task 10: Android audio/media-session adapter bằng audio kiểm thử.
 
 ### Checkpoint: Vertical Slice

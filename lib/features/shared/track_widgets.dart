@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 
 import '../../domain/media/track.dart';
 
+typedef TrackSelectionCallback = void Function(Track track, List<Track> queue);
+
 class TrackArtwork extends StatelessWidget {
   const TrackArtwork({
     super.key,

@@ -45,21 +45,21 @@
 
 - [x] Home và Search dùng fake provider qua ViewModel/repository.
 - [x] Có loading, empty và error states.
-- [ ] Chọn track phát một playback command.
+- [x] Chọn track phát một playback command.
 - Dependencies: Tasks 5, 6.
 
 ## Task 8 — Playback domain
 
-- [ ] Queue, current item, play/pause, next/previous được viết theo TDD.
-- [ ] Edge cases queue rỗng và cuối queue được kiểm thử.
-- [ ] Không phụ thuộc Android API.
+- [x] Queue, current item, play/pause, next/previous được viết theo TDD.
+- [x] Edge cases queue rỗng và cuối queue được kiểm thử.
+- [x] Không phụ thuộc Android API.
 - Dependencies: Task 4.
 
 ## Task 9 — Player UI
 
-- [ ] Mini-player và full player phản ánh playback state.
-- [ ] Controls có semantic labels và touch target phù hợp.
-- [ ] Widget tests kiểm tra thao tác chính.
+- [x] Mini-player và full player phản ánh playback state.
+- [x] Controls có semantic labels và touch target phù hợp.
+- [x] Widget tests kiểm tra thao tác chính.
 - Dependencies: Tasks 6, 8.
 
 ## Task 10 — Android audio adapter

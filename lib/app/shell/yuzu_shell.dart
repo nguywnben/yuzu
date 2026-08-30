@@ -1,8 +1,14 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 import '../../domain/media/music_provider.dart';
+import '../../domain/media/track.dart';
 import '../../features/home/home_screen.dart';
 import '../../features/library/library_screen.dart';
+import '../../features/player/full_player.dart';
+import '../../features/player/mini_player.dart';
+import '../../features/player/playback_controller.dart';
 import '../../features/search/search_screen.dart';
 
 class YuzuShell extends StatefulWidget {
@@ -18,6 +24,7 @@ class _YuzuShellState extends State<YuzuShell> {
   static const _wideLayoutBreakpoint = 840.0;
 
   int _selectedIndex = 0;
+  late final PlaybackController _playbackController;
 
   static const _navigationItems = [
     _NavigationItem(
@@ -37,6 +44,42 @@ class _YuzuShellState extends State<YuzuShell> {
     ),
   ];
 
+  @override
+  void initState() {
+    super.initState();
+    _playbackController = PlaybackController()..addListener(_refresh);
+  }
+
+  void _refresh() {
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
+  void _playTrack(Track track, List<Track> queue) {
+    _playbackController.playTrack(track, queue: queue);
+  }
+
+  void _openPlayer() {
+    unawaited(
+      showModalBottomSheet<void>(
+        context: context,
+        isScrollControlled: true,
+        useSafeArea: true,
+        showDragHandle: false,
+        builder: (context) => FullPlayer(controller: _playbackController),
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _playbackController
+      ..removeListener(_refresh)
+      ..dispose();
+    super.dispose();
+  }
+
   void _selectDestination(int index) {
     setState(() => _selectedIndex = index);
   }
@@ -47,8 +90,14 @@ class _YuzuShellState extends State<YuzuShell> {
     final content = IndexedStack(
       index: _selectedIndex,
       children: [
-        HomeScreen(musicProvider: widget.musicProvider),
-        SearchScreen(musicProvider: widget.musicProvider),
+        HomeScreen(
+          musicProvider: widget.musicProvider,
+          onTrackSelected: _playTrack,
+        ),
+        SearchScreen(
+          musicProvider: widget.musicProvider,
+          onTrackSelected: _playTrack,
+        ),
         const LibraryScreen(),
       ],
     );
@@ -75,7 +124,18 @@ class _YuzuShellState extends State<YuzuShell> {
               ],
             ),
             const VerticalDivider(width: 1),
-            Expanded(child: content),
+            Expanded(
+              child: Column(
+                children: [
+                  Expanded(child: content),
+                  if (_playbackController.currentTrack != null)
+                    MiniPlayer(
+                      controller: _playbackController,
+                      onOpen: _openPlayer,
+                    ),
+                ],
+              ),
+            ),
           ],
         ),
       );
@@ -83,19 +143,26 @@ class _YuzuShellState extends State<YuzuShell> {
 
     return Scaffold(
       body: content,
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: _selectedIndex,
-        onDestinationSelected: _selectDestination,
-        destinations: [
-          for (var index = 0; index < _navigationItems.length; index++)
-            NavigationDestination(
-              key: Key(
-                'destination-${_navigationItems[index].label.toLowerCase()}',
-              ),
-              icon: Icon(_navigationItems[index].icon),
-              selectedIcon: Icon(_navigationItems[index].selectedIcon),
-              label: _navigationItems[index].label,
-            ),
+      bottomNavigationBar: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (_playbackController.currentTrack != null)
+            MiniPlayer(controller: _playbackController, onOpen: _openPlayer),
+          NavigationBar(
+            selectedIndex: _selectedIndex,
+            onDestinationSelected: _selectDestination,
+            destinations: [
+              for (var index = 0; index < _navigationItems.length; index++)
+                NavigationDestination(
+                  key: Key(
+                    'destination-${_navigationItems[index].label.toLowerCase()}',
+                  ),
+                  icon: Icon(_navigationItems[index].icon),
+                  selectedIcon: Icon(_navigationItems[index].selectedIcon),
+                  label: _navigationItems[index].label,
+                ),
+            ],
+          ),
         ],
       ),
     );

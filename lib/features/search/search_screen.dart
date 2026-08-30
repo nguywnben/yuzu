@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 
 import '../../domain/media/music_provider.dart';
-import '../../domain/media/track.dart';
 import '../shared/track_widgets.dart';
 import 'search_view_model.dart';
 
@@ -15,7 +14,7 @@ class SearchScreen extends StatefulWidget {
   });
 
   final MusicProvider musicProvider;
-  final ValueChanged<Track>? onTrackSelected;
+  final TrackSelectionCallback? onTrackSelected;
 
   @override
   State<SearchScreen> createState() => _SearchScreenState();
@@ -108,7 +107,7 @@ class _SearchScreenState extends State<SearchScreen> {
                 track: track,
                 onTap: widget.onTrackSelected == null
                     ? null
-                    : () => widget.onTrackSelected!(track),
+                    : () => widget.onTrackSelected!(track, _viewModel.results),
               );
             },
           ),
