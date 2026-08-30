@@ -80,19 +80,24 @@
 ## Task 12 — Human checkpoint
 
 - [x] The latest debug APK builds, installs, and launches on the Android emulator.
-- [ ] The user reviews the UI, architecture, and milestone APK.
-- [ ] Do not begin the YouTube Music adapter before this checkpoint.
+- [x] The user reviews the UI, architecture, and milestone APK.
+- [x] Do not begin the YouTube Music adapter before this checkpoint.
 - Dependencies: Task 11.
 
 ## Task 13 — YouTube Music adapter spec
 
-- [ ] Document the guest-only scope, catalog endpoints, privacy, and clean-room boundary.
-- [ ] Separate `CatalogProvider` from `StreamResolver`; the UI does not know about Innertube.
-- [ ] Record a decision about the unofficial integration, stability, and policy risks.
+- [x] Document the guest-only scope, catalog endpoints, privacy, and clean-room boundary.
+- [x] Separate `CatalogProvider` from `StreamResolver`; the UI does not know about Innertube.
+- [x] Record a decision about the unofficial integration, stability, and policy risks.
 - Verify: review the specification and ADR; do not add a network implementation.
 - Dependencies: Task 12.
 - Files likely touched: `SPEC-youtube-music-adapter.md`, `docs/decisions/0002-youtube-music-upstream.md`.
 - Estimated scope: Small (documentation only).
+
+## Checkpoint — Adapter design
+
+- [ ] The maintainer reviews and approves `SPEC-youtube-music-adapter.md` and ADR 0002.
+- [ ] Do not begin Task 14 before this checkpoint.
 
 ## Task 14 — Catalog transport contract
 
@@ -100,9 +105,15 @@
 - [ ] Define timeouts, cancellation, and an error taxonomy for network, parse, rejection, and unsupported-response failures.
 - [ ] Do not store cookies, tokens, credentials, or raw user responses.
 - Verify: focused tests, `flutter analyze`, `flutter test`.
-- Dependencies: Task 13.
+- Dependencies: Task 13 and the Adapter design checkpoint.
 - Files likely touched: `lib/data/youtube_music/transport.dart`, `lib/data/youtube_music/catalog_error.dart`, focused tests/fixtures.
 - Estimated scope: Medium (3–5 files).
+
+## Checkpoint — Upstream policy
+
+- [ ] Task 14 remains network-free and passes its offline contract and mapper tests.
+- [ ] The maintainer selects an official API, accepts an unofficial guest experiment, or keeps live access disabled.
+- [ ] Do not begin Task 15 before this checkpoint.
 
 ## Task 15 — Live Search slice
 
@@ -110,7 +121,7 @@
 - [ ] Loading, empty, retry, and upstream-error states render correctly with Material 3.
 - [ ] Dependency injection can switch between fake and live providers without modifying feature UI.
 - Verify: unit/widget tests and a manual check on a network-connected Android device.
-- Dependencies: Task 14.
+- Dependencies: Task 14 and the Upstream policy checkpoint.
 - Files likely touched: live provider/search mapper, DI bootstrap, and focused tests.
 - Estimated scope: Medium (3–5 files).
 

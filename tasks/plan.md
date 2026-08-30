@@ -53,17 +53,28 @@ Build the Flutter Android foundation and a complete music-listening vertical sli
 ### Phase 4: Verification
 
 - [x] Task 11: Add integration tests, pass accessibility checks, and establish baseline coverage.
-- [ ] Task 12: Build the debug APK and review the milestone.
+- [x] Task 12: Build the debug APK and review the milestone.
 
 ### Checkpoint: Milestone 0
 
 - [x] The critical flow runs on a physical Android device or emulator.
-- [ ] The user confirms that the APK, navigation, and player UI are ready to move to live data.
+- [x] The user confirms that the APK, navigation, and player UI are ready to move to live data.
 
 ### Phase 5: Live Catalog Feasibility
 
-- [ ] Task 13: Write the specification and decision record for a guest YouTube Music adapter.
+- [x] Task 13: Write the specification and decision record for a guest YouTube Music adapter.
+
+### Checkpoint: Adapter Design
+
+- [ ] The maintainer reviews `SPEC-youtube-music-adapter.md` and ADR 0002 before Task 14 begins.
+
 - [ ] Task 14: Define the catalog transport, DTO boundary, and error taxonomy with clean-room fixtures.
+
+### Checkpoint: Upstream Policy
+
+- [ ] Task 14 remains network-free and passes its offline contract/mapper tests.
+- [ ] Before Task 15, the maintainer selects an official API, accepts an unofficial guest experiment, or keeps live access disabled.
+
 - [ ] Task 15: Implement live Search behind `MusicProvider` with TDD, timeouts, and typed errors.
 - [ ] Task 16: Implement live Home and continuation handling with TDD.
 - [ ] Task 17: Implement album details with TDD.
@@ -103,10 +114,12 @@ Build the Flutter Android foundation and a complete music-listening vertical sli
 | Innertube is an internal API that may change or block access | High | Run an early feasibility spike, isolate the adapter, use fixtures and an error taxonomy, and retain the fake provider |
 | Direct playback carries terms-of-service and policy risk | High | Record the decision before implementation, do not present it as an official API, and isolate the replaceable resolver |
 | PO tokens or ciphers complicate playback | High | Keep them out of the catalog, spike one track, and stop at the checkpoint if the result is unstable |
+| Unofficial automated access may conflict with YouTube's Terms | High | Keep Task 14 offline and require an explicit policy decision before the first live request |
 | UI becomes inconsistent as it grows | Medium | Establish Material tokens and a component gallery early |
 | Android code blocks the iOS path | Medium | Maintain a platform-adapter boundary and keep Android APIs out of the domain and UI layers |
 
 ## Open Questions
 
 - Finalize the application ID before the public release; it does not block the debug milestone. The license is already GNU GPL v3.0.
-- Before Task 21, decide what policy risk the project will accept for direct YouTube playback.
+- Before Task 15, select the approved catalog upstream path documented in ADR 0002.
+- Before Task 21, make a separate decision about the additional policy and technical risk of direct YouTube playback.
