@@ -66,13 +66,13 @@ Build the Flutter Android foundation and a complete music-listening vertical sli
 
 ### Checkpoint: Adapter Design
 
-- [ ] The maintainer reviews `SPEC-youtube-music-adapter.md` and ADR 0002 before Task 14 begins.
+- [x] The maintainer reviews `SPEC-youtube-music-adapter.md` and ADR 0002 before Task 14 begins.
 
-- [ ] Task 14: Define the catalog transport, DTO boundary, and error taxonomy with clean-room fixtures.
+- [x] Task 14: Define the catalog transport, DTO boundary, and error taxonomy with clean-room fixtures.
 
 ### Checkpoint: Upstream Policy
 
-- [ ] Task 14 remains network-free and passes its offline contract/mapper tests.
+- [x] Task 14 remains network-free and passes its offline contract/mapper tests.
 - [ ] Before Task 15, the maintainer selects an official API, accepts an unofficial guest experiment, or keeps live access disabled.
 
 - [ ] Task 15: Implement live Search behind `MusicProvider` with TDD, timeouts, and typed errors.

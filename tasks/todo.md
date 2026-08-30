@@ -96,14 +96,14 @@
 
 ## Checkpoint — Adapter design
 
-- [ ] The maintainer reviews and approves `SPEC-youtube-music-adapter.md` and ADR 0002.
-- [ ] Do not begin Task 14 before this checkpoint.
+- [x] The maintainer reviews and approves `SPEC-youtube-music-adapter.md` and ADR 0002.
+- [x] Do not begin Task 14 before this checkpoint.
 
 ## Task 14 — Catalog transport contract
 
-- [ ] Write tests first for request/response mapping with self-authored, sanitized fixtures.
-- [ ] Define timeouts, cancellation, and an error taxonomy for network, parse, rejection, and unsupported-response failures.
-- [ ] Do not store cookies, tokens, credentials, or raw user responses.
+- [x] Write tests first for request/response mapping with self-authored, sanitized fixtures.
+- [x] Define timeouts, cancellation, and an error taxonomy for network, parse, rejection, and unsupported-response failures.
+- [x] Do not store cookies, tokens, credentials, or raw user responses.
 - Verify: focused tests, `flutter analyze`, `flutter test`.
 - Dependencies: Task 13 and the Adapter design checkpoint.
 - Files likely touched: `lib/data/youtube_music/transport.dart`, `lib/data/youtube_music/catalog_error.dart`, focused tests/fixtures.
@@ -111,7 +111,7 @@
 
 ## Checkpoint — Upstream policy
 
-- [ ] Task 14 remains network-free and passes its offline contract and mapper tests.
+- [x] Task 14 remains network-free and passes its offline contract and mapper tests.
 - [ ] The maintainer selects an official API, accepts an unofficial guest experiment, or keeps live access disabled.
 - [ ] Do not begin Task 15 before this checkpoint.
 
