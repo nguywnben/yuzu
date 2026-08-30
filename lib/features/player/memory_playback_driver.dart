@@ -62,10 +62,7 @@ final class MemoryPlaybackDriver implements PlaybackDriver {
 
   void _emit() {
     _states.add(
-      PlaybackDriverState(
-        currentIndex: _currentIndex,
-        isPlaying: _isPlaying,
-      ),
+      PlaybackDriverState(currentIndex: _currentIndex, isPlaying: _isPlaying),
     );
   }
 }

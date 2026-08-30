@@ -1,7 +1,18 @@
+import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
 
 import 'app/yuzu_app.dart';
+import 'platform/audio/yuzu_audio_handler.dart';
 
-void main() {
-  runApp(const YuzuApp());
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final audioHandler = await AudioService.init<YuzuAudioHandler>(
+    builder: YuzuAudioHandler.new,
+    config: const AudioServiceConfig(
+      androidNotificationChannelId: 'dev.yuzu.yuzu.audio',
+      androidNotificationChannelName: 'Yuzu playback',
+      androidNotificationOngoing: false,
+    ),
+  );
+  runApp(YuzuApp(playbackDriver: audioHandler));
 }

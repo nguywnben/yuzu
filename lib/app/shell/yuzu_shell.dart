@@ -59,7 +59,12 @@ class _YuzuShellState extends State<YuzuShell> {
 
   void _refresh() {
     if (mounted) {
+      final errorMessage = _playbackController.takeErrorMessage();
       setState(() {});
+      if (errorMessage != null) {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text(errorMessage)));
+      }
     }
   }
 

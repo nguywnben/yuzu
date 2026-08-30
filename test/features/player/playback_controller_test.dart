@@ -17,19 +17,22 @@ void main() {
       expect(controller.canSkipNext, isFalse);
     });
 
-    test('selecting a track delegates its context and follows driver state', () {
-      final driver = _RecordingPlaybackDriver();
-      final controller = PlaybackController(driver);
+    test(
+      'selecting a track delegates its context and follows driver state',
+      () {
+        final driver = _RecordingPlaybackDriver();
+        final controller = PlaybackController(driver);
 
-      controller.playTrack(tracks[1], queue: tracks);
+        controller.playTrack(tracks[1], queue: tracks);
 
-      expect(driver.loadedTracks, tracks);
-      expect(driver.loadedIndex, 1);
-      expect(controller.currentTrack?.id, 'two');
-      expect(controller.isPlaying, isTrue);
-      expect(controller.canSkipNext, isTrue);
-      expect(controller.canSkipPrevious, isTrue);
-    });
+        expect(driver.loadedTracks, tracks);
+        expect(driver.loadedIndex, 1);
+        expect(controller.currentTrack?.id, 'two');
+        expect(controller.isPlaying, isTrue);
+        expect(controller.canSkipNext, isTrue);
+        expect(controller.canSkipPrevious, isTrue);
+      },
+    );
 
     test('toggles play and pause only when a track is loaded', () {
       final controller = PlaybackController(_RecordingPlaybackDriver());
@@ -77,10 +80,29 @@ void main() {
       expect(controller.currentTrack?.id, 'three');
       expect(controller.isPlaying, isFalse);
     });
+
+    test('turns driver failures into a consumable playback error', () async {
+      final controller = PlaybackController(
+        _RecordingPlaybackDriver(loadError: StateError('decoder failed')),
+      );
+
+      controller.playTrack(tracks.first);
+      await Future<void>.delayed(Duration.zero);
+
+      expect(controller.isPlaying, isFalse);
+      expect(
+        controller.takeErrorMessage(),
+        'Unable to play audio. Please try again.',
+      );
+      expect(controller.takeErrorMessage(), isNull);
+    });
   });
 }
 
 final class _RecordingPlaybackDriver implements PlaybackDriver {
+  _RecordingPlaybackDriver({this.loadError});
+
+  final Object? loadError;
   final _states = StreamController<PlaybackDriverState>.broadcast(sync: true);
 
   List<Track>? loadedTracks;
@@ -93,6 +115,10 @@ final class _RecordingPlaybackDriver implements PlaybackDriver {
 
   @override
   Future<void> loadQueue(List<Track> tracks, {required int startIndex}) async {
+    final error = loadError;
+    if (error != null) {
+      throw error;
+    }
     loadedTracks = tracks;
     loadedIndex = startIndex;
     _currentIndex = startIndex;
@@ -115,13 +141,17 @@ final class _RecordingPlaybackDriver implements PlaybackDriver {
   @override
   Future<void> skipNext() async {
     _currentIndex += 1;
-    emit(PlaybackDriverState(currentIndex: _currentIndex, isPlaying: _isPlaying));
+    emit(
+      PlaybackDriverState(currentIndex: _currentIndex, isPlaying: _isPlaying),
+    );
   }
 
   @override
   Future<void> skipPrevious() async {
     _currentIndex -= 1;
-    emit(PlaybackDriverState(currentIndex: _currentIndex, isPlaying: _isPlaying));
+    emit(
+      PlaybackDriverState(currentIndex: _currentIndex, isPlaying: _isPlaying),
+    );
   }
 
   void emit(PlaybackDriverState state) => _states.add(state);

@@ -15,6 +15,7 @@ final class PlaybackController extends ChangeNotifier {
   late final StreamSubscription<PlaybackDriverState> _stateSubscription;
   PlaybackQueue _queue = PlaybackQueue.empty();
   bool _isPlaying = false;
+  String? _errorMessage;
 
   PlaybackQueue get queue => _queue;
   Track? get currentTrack => _queue.currentTrack;
@@ -35,28 +36,46 @@ final class PlaybackController extends ChangeNotifier {
 
     _queue = PlaybackQueue.fromTracks(nextQueue, startIndex: startIndex);
     notifyListeners();
-    unawaited(_driver.loadQueue(nextQueue, startIndex: startIndex));
+    unawaited(
+      _runCommand(_driver.loadQueue(nextQueue, startIndex: startIndex)),
+    );
   }
 
   void togglePlayPause() {
     if (currentTrack == null) {
       return;
     }
-    unawaited(_isPlaying ? _driver.pause() : _driver.play());
+    unawaited(_runCommand(_isPlaying ? _driver.pause() : _driver.play()));
   }
 
   void skipNext() {
     if (!canSkipNext) {
       return;
     }
-    unawaited(_driver.skipNext());
+    unawaited(_runCommand(_driver.skipNext()));
   }
 
   void skipPrevious() {
     if (!canSkipPrevious) {
       return;
     }
-    unawaited(_driver.skipPrevious());
+    unawaited(_runCommand(_driver.skipPrevious()));
+  }
+
+  String? takeErrorMessage() {
+    final message = _errorMessage;
+    _errorMessage = null;
+    return message;
+  }
+
+  Future<void> _runCommand(Future<void> command) async {
+    try {
+      await command;
+    } on Object {
+      _isPlaying = false;
+      _errorMessage = 'Unable to play audio. Please try again.';
+      notifyListeners();
+    }
   }
 
   void _applyDriverState(PlaybackDriverState state) {

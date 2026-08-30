@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:yuzu/app/yuzu_app.dart';
 import 'package:yuzu/data/fake/fake_music_provider.dart';
+import 'package:yuzu/domain/media/track.dart';
 import 'package:yuzu/features/player/mini_player.dart';
+import 'package:yuzu/features/player/playback_driver.dart';
 
 void main() {
   testWidgets('selecting a Home track opens a controllable mini-player', (
@@ -59,6 +61,49 @@ void main() {
 
     expect(find.byType(MiniPlayer), findsOneWidget);
   });
+
+  testWidgets('shows a Material error when the audio driver fails', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      YuzuApp(
+        musicProvider: FakeMusicProvider(),
+        playbackDriver: _FailingPlaybackDriver(),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Sunrise Drive'));
+    await tester.pumpAndSettle();
+
+    expect(
+      find.text('Unable to play audio. Please try again.'),
+      findsOneWidget,
+    );
+  });
 }
 
 Widget _testApp() => YuzuApp(musicProvider: FakeMusicProvider());
+
+final class _FailingPlaybackDriver implements PlaybackDriver {
+  @override
+  Stream<PlaybackDriverState> get states =>
+      const Stream<PlaybackDriverState>.empty();
+
+  @override
+  Future<void> loadQueue(List<Track> tracks, {required int startIndex}) async {
+    throw StateError('decoder failed');
+  }
+
+  @override
+  Future<void> pause() async {}
+
+  @override
+  Future<void> play() async {}
+
+  @override
+  Future<void> skipNext() async {}
+
+  @override
+  Future<void> skipPrevious() async {}
+}
