@@ -20,6 +20,7 @@ flutter pub get
 dart format --output=none --set-exit-if-changed .
 flutter analyze
 flutter test
+flutter test integration_test/critical_flow_test.dart -d <device-id>
 flutter test --coverage
 flutter build apk --debug
 ```

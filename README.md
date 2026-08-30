@@ -21,6 +21,7 @@ Hiện dự án đang ở giai đoạn nền tảng. Milestone đầu tiên dùn
 ```powershell
 flutter analyze
 flutter test
+flutter test integration_test/critical_flow_test.dart -d <device-id>
 flutter build apk --debug
 ```
 
