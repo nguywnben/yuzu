@@ -28,7 +28,7 @@ Dựng nền tảng Flutter Android và một vertical slice nghe nhạc hoàn c
 ### Phase 2: Contracts and Design System
 
 - [x] Task 4: Viết test và triển khai media domain/provider contract.
-- [ ] Task 5: Viết test và triển khai fake catalog repository.
+- [x] Task 5: Viết test và triển khai fake catalog repository.
 - [ ] Task 6: Xây Material 3 theme/tokens và app shell có test.
 
 ### Checkpoint: Contracts

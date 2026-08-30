@@ -29,9 +29,9 @@
 
 ## Task 5 — Fake catalog
 
-- [ ] Fake provider trả Home sections và kết quả Search xác định.
-- [ ] Loading/empty/error đều mô phỏng được trong test.
-- [ ] Không có network call.
+- [x] Fake provider trả Home sections và kết quả Search xác định.
+- [x] Loading/empty/error đều mô phỏng được trong test.
+- [x] Không có network call.
 - Dependencies: Task 4.
 
 ## Task 6 — Material 3 app shell
