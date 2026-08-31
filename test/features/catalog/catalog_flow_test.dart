@@ -51,4 +51,19 @@ void main() {
     expect(find.text('Sunrise Drive'), findsOneWidget);
     expect(find.text('Yuzu Sessions'), findsOneWidget);
   });
+
+  testWidgets('Search distinguishes tracks, albums, and artists', (
+    tester,
+  ) async {
+    await tester.pumpWidget(YuzuApp(musicProvider: FakeMusicProvider()));
+
+    await tester.tap(find.byKey(const Key('destination-search')));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(SearchBar), 'yuzu sessions');
+    await tester.pumpAndSettle();
+
+    expect(find.text('Track'), findsWidgets);
+    expect(find.text('Album'), findsOneWidget);
+    expect(find.text('Artist'), findsOneWidget);
+  });
 }

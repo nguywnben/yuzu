@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:yuzu/data/fake/fake_music_provider.dart';
+import 'package:yuzu/domain/media/search_result.dart';
 import 'package:yuzu/features/search/search_view_model.dart';
 
 void main() {
@@ -24,6 +25,8 @@ void main() {
       await request;
       expect(viewModel.status, SearchStatus.ready);
       expect(viewModel.results.single.id, 'sunrise-drive');
+      expect(viewModel.results.single, isA<TrackSearchResult>());
+      expect(viewModel.trackResults.single.id, 'sunrise-drive');
     });
 
     test('distinguishes no matches from provider failure', () async {

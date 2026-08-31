@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:yuzu/data/fake/fake_music_provider.dart';
 import 'package:yuzu/domain/media/music_provider.dart';
+import 'package:yuzu/domain/media/search_result.dart';
 
 void main() {
   group('FakeMusicProvider', () {
@@ -28,8 +29,11 @@ void main() {
       final byArtist = await provider.search('yuzu sessions');
       final blank = await provider.search('   ');
 
+      expect(byTitle.single, isA<TrackSearchResult>());
       expect(byTitle.single.title, 'Sunrise Drive');
       expect(byArtist, isNotEmpty);
+      expect(byArtist.whereType<AlbumSearchResult>(), isNotEmpty);
+      expect(byArtist.whereType<ArtistSearchResult>(), isNotEmpty);
       expect(blank, isEmpty);
     });
 

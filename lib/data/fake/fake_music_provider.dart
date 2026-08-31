@@ -1,5 +1,6 @@
 import '../../domain/media/home_section.dart';
 import '../../domain/media/music_provider.dart';
+import '../../domain/media/search_result.dart';
 import '../../domain/media/track.dart';
 
 enum FakeCatalogScenario { ready, empty, failure }
@@ -52,6 +53,16 @@ final class FakeMusicProvider implements MusicProvider {
     ),
   ];
 
+  static final List<SearchResult> _searchCatalog = [
+    for (final track in _catalog) TrackSearchResult(track),
+    AlbumSearchResult(
+      id: 'orange-hours',
+      title: 'Orange Hours',
+      artists: const ['Yuzu Sessions'],
+    ),
+    ArtistSearchResult(id: 'yuzu-sessions', name: 'Yuzu Sessions'),
+  ];
+
   @override
   Future<List<HomeSection>> fetchHome() async {
     await _waitForResponse();
@@ -77,7 +88,7 @@ final class FakeMusicProvider implements MusicProvider {
   }
 
   @override
-  Future<List<Track>> search(String query) async {
+  Future<List<SearchResult>> search(String query) async {
     await _waitForResponse();
     switch (scenario) {
       case FakeCatalogScenario.ready:
@@ -85,10 +96,15 @@ final class FakeMusicProvider implements MusicProvider {
         if (normalizedQuery.isEmpty) {
           return const [];
         }
-        return _catalog
-            .where((track) {
-              final searchableText = '${track.title} ${track.artistLabel}'
-                  .toLowerCase();
+        return _searchCatalog
+            .where((result) {
+              final searchableText = switch (result) {
+                TrackSearchResult(:final track) =>
+                  '${track.title} ${track.artistLabel}',
+                AlbumSearchResult(:final title, :final artistLabel) =>
+                  '$title $artistLabel',
+                ArtistSearchResult(:final name) => name,
+              }.toLowerCase();
               return searchableText.contains(normalizedQuery);
             })
             .toList(growable: false);

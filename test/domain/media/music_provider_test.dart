@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:yuzu/domain/media/home_section.dart';
 import 'package:yuzu/domain/media/music_provider.dart';
+import 'package:yuzu/domain/media/search_result.dart';
 import 'package:yuzu/domain/media/track.dart';
 
 void main() {
@@ -32,5 +33,7 @@ final class _ContractProbeProvider implements MusicProvider {
   ];
 
   @override
-  Future<List<Track>> search(String query) async => [track];
+  Future<List<SearchResult>> search(String query) async => [
+    TrackSearchResult(track),
+  ];
 }

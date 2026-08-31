@@ -1,10 +1,10 @@
 import 'home_section.dart';
-import 'track.dart';
+import 'search_result.dart';
 
 abstract interface class MusicProvider {
   Future<List<HomeSection>> fetchHome();
 
-  Future<List<Track>> search(String query);
+  Future<List<SearchResult>> search(String query);
 }
 
 final class MusicProviderException implements Exception {

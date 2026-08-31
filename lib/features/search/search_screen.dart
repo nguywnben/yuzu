@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 
 import '../../domain/media/music_provider.dart';
+import '../../domain/media/search_result.dart';
+import '../../domain/media/track.dart';
 import '../shared/track_widgets.dart';
 import 'search_view_model.dart';
 
@@ -102,12 +104,15 @@ class _SearchScreenState extends State<SearchScreen> {
           sliver: SliverList.builder(
             itemCount: _viewModel.results.length,
             itemBuilder: (context, index) {
-              final track = _viewModel.results[index];
-              return TrackListTile(
-                track: track,
-                onTap: widget.onTrackSelected == null
+              final result = _viewModel.results[index];
+              return _SearchResultTile(
+                result: result,
+                onTrackSelected: widget.onTrackSelected == null
                     ? null
-                    : () => widget.onTrackSelected!(track, _viewModel.results),
+                    : (track) => widget.onTrackSelected!(
+                        track,
+                        _viewModel.trackResults,
+                      ),
               );
             },
           ),
@@ -128,6 +133,68 @@ class _SearchScreenState extends State<SearchScreen> {
         ),
       ],
     };
+  }
+}
+
+class _SearchResultTile extends StatelessWidget {
+  const _SearchResultTile({required this.result, this.onTrackSelected});
+
+  final SearchResult result;
+  final ValueChanged<Track>? onTrackSelected;
+
+  @override
+  Widget build(BuildContext context) {
+    final (icon, subtitle, onTap) = switch (result) {
+      TrackSearchResult(:final track) => (
+        Icons.music_note_rounded,
+        _ResultSubtitle(category: 'Track', detail: track.artistLabel),
+        onTrackSelected == null ? null : () => onTrackSelected!(track),
+      ),
+      AlbumSearchResult(:final artistLabel) => (
+        Icons.album_rounded,
+        _ResultSubtitle(category: 'Album', detail: artistLabel),
+        null,
+      ),
+      ArtistSearchResult() => (
+        Icons.person_rounded,
+        const _ResultSubtitle(category: 'Artist'),
+        null,
+      ),
+    };
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return ListTile(
+      leading: CircleAvatar(
+        backgroundColor: colorScheme.secondaryContainer,
+        foregroundColor: colorScheme.onSecondaryContainer,
+        child: Icon(icon),
+      ),
+      title: Text(result.title, maxLines: 1, overflow: TextOverflow.ellipsis),
+      subtitle: subtitle,
+      onTap: onTap,
+    );
+  }
+}
+
+class _ResultSubtitle extends StatelessWidget {
+  const _ResultSubtitle({required this.category, this.detail});
+
+  final String category;
+  final String? detail;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Text(category),
+        if (detail case final detail?) ...[
+          const Text(' • '),
+          Expanded(
+            child: Text(detail, maxLines: 1, overflow: TextOverflow.ellipsis),
+          ),
+        ],
+      ],
+    );
   }
 }
 

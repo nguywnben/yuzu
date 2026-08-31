@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 
 import '../../domain/media/music_provider.dart';
+import '../../domain/media/search_result.dart';
 import '../../domain/media/track.dart';
 
 enum SearchStatus { idle, loading, ready, empty, failure }
@@ -11,13 +12,17 @@ final class SearchViewModel extends ChangeNotifier {
   final MusicProvider _musicProvider;
 
   SearchStatus _status = SearchStatus.idle;
-  List<Track> _results = const [];
+  List<SearchResult> _results = const [];
   String _query = '';
   String _errorMessage = '';
   int _requestGeneration = 0;
 
   SearchStatus get status => _status;
-  List<Track> get results => _results;
+  List<SearchResult> get results => _results;
+  List<Track> get trackResults => [
+    for (final result in _results)
+      if (result case TrackSearchResult(:final track)) track,
+  ];
   String get query => _query;
   String get errorMessage => _errorMessage;
 
