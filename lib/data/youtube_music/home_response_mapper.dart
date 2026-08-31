@@ -9,9 +9,7 @@ import 'search_response_mapper.dart';
 import 'transport.dart';
 
 final class HomeResponseMapper {
-  const HomeResponseMapper({
-    SearchResponseMapper itemMapper = const SearchResponseMapper(),
-  }) : _itemMapper = itemMapper;
+  const HomeResponseMapper({this._itemMapper = const SearchResponseMapper()});
 
   static const maxDepth = 32;
   static const maxNodes = 8000;
