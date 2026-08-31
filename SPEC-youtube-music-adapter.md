@@ -4,7 +4,7 @@
 
 Define a clean-room, guest-only catalog boundary for exploring YouTube Music as a replaceable Yuzu backend without coupling feature UI, domain models, or playback to an undocumented upstream protocol.
 
-This specification authorizes documentation, domain contracts, sanitized self-authored fixtures, and offline parser tests. It does not authorize live network requests. Live access requires the policy checkpoint in the roadmap because YouTube's current Terms restrict automated access without prior written permission.
+This specification authorizes documentation, domain contracts, sanitized self-authored fixtures, and offline parser tests. On 2026-08-31, the maintainer also approved a revocable unofficial guest experiment for Tasks 15–19 with the availability and policy risks below acknowledged. YouTube's current Terms restrict automated access without prior written permission, so this engineering decision is not a claim of official support or legal permission.
 
 ## Scope
 
@@ -33,10 +33,10 @@ As reviewed on 2026-08-30:
 - The official YouTube Data API offers documented public search for videos, channels, and playlists, requires an API project/key, and is not a documented equivalent of the YouTube Music Home catalog or audio playback.
 - YouTube API Services policies are the compliance baseline if Yuzu adopts an official API. They require clear privacy disclosures, secure handling, current data, and limits on storage; they also prohibit scraping and offline copies of audiovisual content.
 
-These observations are engineering constraints, not legal advice. Before Task 15 sends any live request, the maintainer must explicitly select one of these paths:
+These observations are engineering constraints, not legal advice. The maintainer selected path 2 on 2026-08-31:
 
 1. Use an official API within its documented capabilities and policies.
-2. Continue an unofficial guest-only experiment with acknowledged availability and policy risk.
+2. **Selected:** continue an unofficial guest-only experiment with acknowledged availability and policy risk.
 3. Keep remote catalog access disabled and retain the fake provider.
 
 ## Architecture
@@ -210,7 +210,7 @@ No command in Task 13 or 14 should contact YouTube. Live manual verification beg
 
 ## Open Questions
 
-- Which upstream path will the maintainer approve at the policy checkpoint: official API, acknowledged unofficial experiment, or no live backend?
+- The upstream policy checkpoint is resolved for Tasks 15–19 by the acknowledged unofficial guest experiment; revisit it on any ADR review trigger.
 - If an official API is selected, how will Yuzu handle quota and credentials without pretending an API key embedded in a distributed APK is secret?
 - What official application ID will replace `dev.yuzu.yuzu` before public distribution?
 

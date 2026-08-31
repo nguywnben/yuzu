@@ -16,7 +16,7 @@ Build the Flutter Android foundation and a complete music-listening vertical sli
 
 ## Task List
 
-### Phase 1: Foundation
+### Wave 1: Project Foundation
 
 - [x] Task 1: Record the product one-pager, capability map, specification, and constraints.
 - [x] Task 2: Install and verify the Flutter/Android toolchain.
@@ -27,7 +27,7 @@ Build the Flutter Android foundation and a complete music-listening vertical sli
 - [x] `flutter doctor -v` reports no Android blockers.
 - [x] The counter-template replacement builds and tests cleanly.
 
-### Phase 2: Contracts and Design System
+### Wave 2: Product Skeleton
 
 - [x] Task 4: Test and implement the media domain/provider contract.
 - [x] Task 5: Test and implement the fake catalog repository.
@@ -38,7 +38,7 @@ Build the Flutter Android foundation and a complete music-listening vertical sli
 - [x] Domain and fake-provider tests pass.
 - [x] The light/dark application shell renders at phone and tablet sizes.
 
-### Phase 3: First Vertical Slice
+### Wave 3: Offline Player Prototype
 
 - [x] Task 7: Build Home and Search with loading, empty, and error states.
 - [x] Task 8: Build playback state, queue, and controls with TDD.
@@ -50,7 +50,7 @@ Build the Flutter Android foundation and a complete music-listening vertical sli
 - [x] The Home/Search → Track → Player flow works end to end.
 - [x] Background playback and notifications are verified on Android.
 
-### Phase 4: Verification
+### Wave 4: Milestone 0 Quality Gate
 
 - [x] Task 11: Add integration tests, pass accessibility checks, and establish baseline coverage.
 - [x] Task 12: Build the debug APK and review the milestone.
@@ -60,7 +60,7 @@ Build the Flutter Android foundation and a complete music-listening vertical sli
 - [x] The critical flow runs on a physical Android device or emulator.
 - [x] The user confirms that the APK, navigation, and player UI are ready to move to live data.
 
-### Phase 5: Live Catalog Feasibility
+### Wave 5: Backend Adapter Foundation
 
 - [x] Task 13: Write the specification and decision record for a guest YouTube Music adapter.
 
@@ -73,10 +73,15 @@ Build the Flutter Android foundation and a complete music-listening vertical sli
 ### Checkpoint: Upstream Policy
 
 - [x] Task 14 remains network-free and passes its offline contract/mapper tests.
-- [ ] Before Task 15, the maintainer selects an official API, accepts an unofficial guest experiment, or keeps live access disabled.
+- [x] On 2026-08-31, the maintainer accepted the unofficial guest experiment with its documented availability and policy risks.
+
+#### Wave 6A: Live Discovery
 
 - [ ] Task 15: Implement live Search behind `MusicProvider` with TDD, timeouts, and typed errors.
 - [ ] Task 16: Implement live Home and continuation handling with TDD.
+
+#### Wave 6B: Live Details
+
 - [ ] Task 17: Implement album details with TDD.
 - [ ] Task 18: Implement artist details with TDD.
 - [ ] Task 19: Implement playlist details with TDD.
@@ -87,7 +92,7 @@ Build the Flutter Android foundation and a complete music-listening vertical sli
 - [ ] Search and Home work against the live network; loading, empty, malformed-response, timeout, and upstream-rejection states are tested.
 - [ ] Source and test fixtures contain no cookies, tokens, credentials, or user JSON.
 
-### Phase 6: Playback Feasibility
+### Wave 7: Live Playback
 
 - [ ] Task 20: Write a dedicated specification for the stream resolver, URL expiry, headers, and failure recovery.
 - [ ] Task 21: Build a playback spike for one public track without sign-in or downloads.
@@ -99,7 +104,7 @@ Build the Flutter Android foundation and a complete music-listening vertical sli
 - [ ] Expired URLs, blocked content, network loss, and upstream changes produce useful errors without crashing.
 - [ ] Format, analyze, unit/widget/integration tests, and the debug APK all pass.
 
-### Phase 7: MVP Product Slice
+### Wave 8: MVP Release
 
 - [ ] Task 23: Polish the catalog UI with live artwork, pagination, and Material 3 retry states.
 - [ ] Task 24: Add a minimal local library with favorites and listening history.
@@ -121,5 +126,5 @@ Build the Flutter Android foundation and a complete music-listening vertical sli
 ## Open Questions
 
 - Finalize the application ID before the public release; it does not block the debug milestone. The license is already GNU GPL v3.0.
-- Before Task 15, select the approved catalog upstream path documented in ADR 0002.
+- The unofficial guest catalog experiment is approved for Tasks 15–19 and remains replaceable by the fake provider.
 - Before Task 21, make a separate decision about the additional policy and technical risk of direct YouTube playback.

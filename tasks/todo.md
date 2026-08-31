@@ -112,8 +112,8 @@
 ## Checkpoint — Upstream policy
 
 - [x] Task 14 remains network-free and passes its offline contract and mapper tests.
-- [ ] The maintainer selects an official API, accepts an unofficial guest experiment, or keeps live access disabled.
-- [ ] Do not begin Task 15 before this checkpoint.
+- [x] On 2026-08-31, the maintainer accepted the unofficial guest experiment and its documented availability and policy risks.
+- [x] Task 15 may begin with guest-only, read-only requests and no persisted credentials, cookies, or visitor identifiers.
 
 ## Task 15 — Live Search slice
 

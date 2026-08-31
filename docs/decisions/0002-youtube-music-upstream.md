@@ -1,7 +1,8 @@
 # ADR 0002: Isolate guest YouTube Music catalog access
 
-- Status: Accepted for contracts; live access requires policy approval
+- Status: Accepted for an isolated unofficial guest experiment
 - Date: 2026-08-30
+- Live experiment approved: 2026-08-31
 
 ## Context
 
@@ -16,7 +17,9 @@ The official YouTube Data API is documented and supports public search for video
 - Treat the existing source-neutral `MusicProvider` as the catalog-provider boundary. Keep the symbol during Task 14; any later rename to `CatalogProvider` must be one mechanical migration rather than a parallel interface.
 - Keep `StreamResolver` separate. Catalog code never returns playable URLs, media headers, cipher data, account state, or playback transport DTOs.
 - Permit Task 14 to define contracts, sanitized self-authored fixtures, fake transports, parsers, and typed failures without contacting YouTube.
-- Require explicit maintainer approval before Task 15 makes live requests. The approval must select an official API, an acknowledged unofficial experiment, or no live backend.
+- Record the maintainer's 2026-08-31 approval of an acknowledged unofficial guest experiment for Tasks 15–19. This approval accepts availability and policy risk; it is not a claim of official support or permission from YouTube.
+- Bootstrap public web-client configuration at runtime and keep it in process memory only. Do not hard-code, persist, log, or commit upstream API keys, cookies, visitor data, or response payloads.
+- Restrict the experiment to guest-only, read-only catalog requests against the `music.youtube.com` HTTPS host. A requirement for account cookies, persistent visitor identity, device attestation, or additional hosts triggers a new review.
 - Keep the fake provider as the deterministic test backend and operational fallback.
 - Use guest-only, read-only behavior. Do not accept Google credentials, authenticated cookies, or account-linked tokens.
 - Treat search queries, continuation tokens, anonymous visitor/session values, and all upstream responses as sensitive untrusted data. Do not persist or log them.
@@ -60,7 +63,7 @@ This ADR records an engineering risk decision and is not legal advice.
 ## Consequences
 
 - Tasks 14–19 can evolve catalog behavior without changing feature UI.
-- Task 14 remains network-free; live feasibility moves behind an explicit human checkpoint.
+- Task 14 remains network-free; Task 15 begins the explicitly approved, revocable live experiment.
 - More mapping and contract code is required, but upstream changes remain localized.
 - Guest results may be generic, locale-dependent, incomplete, rejected, or unavailable.
 - A policy or upstream change can disable the experimental backend while the application continues with the fake provider.
