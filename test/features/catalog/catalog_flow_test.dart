@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:yuzu/app/yuzu_app.dart';
 import 'package:yuzu/data/fake/fake_music_provider.dart';
-import 'package:yuzu/domain/media/home_section.dart';
+import 'package:yuzu/domain/media/home_page.dart';
 import 'package:yuzu/domain/media/music_provider.dart';
 import 'package:yuzu/domain/media/search_result.dart';
 
@@ -129,7 +129,8 @@ final class _FlakySearchProvider implements MusicProvider {
   var _attempts = 0;
 
   @override
-  Future<List<HomeSection>> fetchHome() => _delegate.fetchHome();
+  Future<HomePage> fetchHome({String? continuationToken}) =>
+      _delegate.fetchHome(continuationToken: continuationToken);
 
   @override
   Future<List<SearchResult>> search(String query) {
@@ -146,7 +147,8 @@ final class _CountingSearchProvider implements MusicProvider {
   final List<String> queries = [];
 
   @override
-  Future<List<HomeSection>> fetchHome() => _delegate.fetchHome();
+  Future<HomePage> fetchHome({String? continuationToken}) =>
+      _delegate.fetchHome(continuationToken: continuationToken);
 
   @override
   Future<List<SearchResult>> search(String query) {

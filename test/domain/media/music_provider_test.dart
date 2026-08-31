@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:yuzu/domain/media/home_page.dart';
 import 'package:yuzu/domain/media/home_section.dart';
 import 'package:yuzu/domain/media/music_provider.dart';
 import 'package:yuzu/domain/media/search_result.dart';
@@ -13,7 +14,7 @@ void main() {
       final home = await provider.fetchHome();
       final results = await provider.search('sunrise');
 
-      expect(home.single.title, 'Made for testing');
+      expect(home.sections.single.title, 'Made for testing');
       expect(results.single.id, 'track-1');
     },
   );
@@ -28,9 +29,11 @@ final class _ContractProbeProvider implements MusicProvider {
   );
 
   @override
-  Future<List<HomeSection>> fetchHome() async => [
-    HomeSection(id: 'for-you', title: 'Made for testing', tracks: [track]),
-  ];
+  Future<HomePage> fetchHome({String? continuationToken}) async => HomePage(
+    sections: [
+      HomeSection(id: 'for-you', title: 'Made for testing', tracks: [track]),
+    ],
+  );
 
   @override
   Future<List<SearchResult>> search(String query) async => [
