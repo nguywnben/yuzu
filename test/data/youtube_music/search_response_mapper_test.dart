@@ -33,6 +33,53 @@ void main() {
       expect(results[2], isA<ArtistSearchResult>());
     });
 
+    test('maps endpoint-typed album and artist top cards', () {
+      final response = CatalogTransportResponse(
+        statusCode: 200,
+        contentType: 'application/json',
+        bodyBytes: utf8.encode(
+          jsonEncode({
+            'cards': [
+              _topCard(
+                id: 'fixture-card-album',
+                title: 'Citrus Archive',
+                pageType: 'MUSIC_PAGE_TYPE_ALBUM',
+                subtitleRuns: [
+                  {'text': 'Album'},
+                  {
+                    'text': 'Yuzu Lab',
+                    'navigationEndpoint': {
+                      'browseEndpoint': {
+                        'browseId': 'fixture-card-artist',
+                        'browseEndpointContextSupportedConfigs': {
+                          'browseEndpointContextMusicConfig': {
+                            'pageType': 'MUSIC_PAGE_TYPE_ARTIST',
+                          },
+                        },
+                      },
+                    },
+                  },
+                ],
+              ),
+              _topCard(
+                id: 'fixture-card-artist',
+                title: 'Yuzu Lab',
+                pageType: 'MUSIC_PAGE_TYPE_ARTIST',
+                subtitleRuns: const [
+                  {'text': 'Artist'},
+                ],
+              ),
+            ],
+          }),
+        ),
+      );
+
+      final results = mapper.map(response);
+
+      expect(results.whereType<AlbumSearchResult>(), hasLength(1));
+      expect(results.whereType<ArtistSearchResult>(), hasLength(1));
+    });
+
     test('maps typed failures without exposing response content', () {
       final response = CatalogTransportResponse(
         statusCode: 429,
@@ -91,3 +138,29 @@ void main() {
     });
   });
 }
+
+Map<String, Object?> _topCard({
+  required String id,
+  required String title,
+  required String pageType,
+  required List<Map<String, Object?>> subtitleRuns,
+}) => {
+  'musicCardShelfRenderer': {
+    'title': {
+      'runs': [
+        {
+          'text': title,
+          'navigationEndpoint': {
+            'browseEndpoint': {
+              'browseId': id,
+              'browseEndpointContextSupportedConfigs': {
+                'browseEndpointContextMusicConfig': {'pageType': pageType},
+              },
+            },
+          },
+        },
+      ],
+    },
+    'subtitle': {'runs': subtitleRuns},
+  },
+};

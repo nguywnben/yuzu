@@ -55,6 +55,7 @@ void main() {
     await tester.tap(find.byKey(const Key('destination-search')));
     await tester.pumpAndSettle();
     await tester.enterText(find.byType(SearchBar), 'sunrise');
+    await tester.pump(const Duration(milliseconds: 350));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Sunrise Drive'));
     await tester.pump();

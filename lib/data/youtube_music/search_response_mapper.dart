@@ -50,6 +50,16 @@ final class SearchResponseMapper {
               }
             }
           }
+          final card = map['musicCardShelfRenderer'];
+          if (card is Map<String, Object?>) {
+            final result = _mapCard(card);
+            if (result != null) {
+              results.add(result);
+              if (results.length > maxResults) {
+                _fail(CatalogFailureKind.unsupportedSchema);
+              }
+            }
+          }
           for (final child in map.values) {
             stack.add(_TraversalEntry(value: child, depth: entry.depth + 1));
           }
@@ -77,30 +87,74 @@ final class SearchResponseMapper {
     }
     final titleRun = titleRuns.first;
     final title = _text(titleRun['text']);
-    final kind = _text(metadataRuns.first['text']);
-    if (title == null || kind == null) {
+    if (title == null) {
       return null;
     }
     final artworkUri = _artworkUri(renderer);
+    final hasWatchEndpoint =
+        _text(
+          _at(titleRun, const [
+            'navigationEndpoint',
+            'watchEndpoint',
+            'videoId',
+          ]),
+        ) !=
+        null;
+    final pageType = _pageType(
+      _asMap(_at(titleRun, const ['navigationEndpoint', 'browseEndpoint'])),
+    );
 
-    return switch (kind) {
-      'Song' => _mapTrack(
+    if (hasWatchEndpoint) {
+      return _mapTrack(
         renderer: renderer,
         titleRun: titleRun,
         title: title,
         metadataRuns: metadataRuns,
         artworkUri: artworkUri,
-      ),
-      'Album' => _mapAlbum(
+      );
+    }
+    return switch (pageType) {
+      'MUSIC_PAGE_TYPE_ALBUM' => _mapAlbum(
         titleRun: titleRun,
         title: title,
         metadataRuns: metadataRuns,
         artworkUri: artworkUri,
       ),
-      'Artist' => _mapArtist(
+      'MUSIC_PAGE_TYPE_ARTIST' => _mapArtist(
         titleRun: titleRun,
         name: title,
         artworkUri: artworkUri,
+      ),
+      _ => null,
+    };
+  }
+
+  SearchResult? _mapCard(Map<String, Object?> card) {
+    final titleRuns = _runsAt(card, const ['title', 'runs']);
+    final subtitleRuns = _runsAt(card, const ['subtitle', 'runs']);
+    if (titleRuns.isEmpty || subtitleRuns.isEmpty) {
+      return null;
+    }
+    final titleRun = titleRuns.first;
+    final title = _text(titleRun['text']);
+    if (title == null) {
+      return null;
+    }
+    final browseEndpoint = _asMap(
+      _at(titleRun, const ['navigationEndpoint', 'browseEndpoint']),
+    );
+
+    return switch (_pageType(browseEndpoint)) {
+      'MUSIC_PAGE_TYPE_ALBUM' => _mapAlbum(
+        titleRun: titleRun,
+        title: title,
+        metadataRuns: subtitleRuns,
+        artworkUri: _artworkUri(card),
+      ),
+      'MUSIC_PAGE_TYPE_ARTIST' => _mapArtist(
+        titleRun: titleRun,
+        name: title,
+        artworkUri: _artworkUri(card),
       ),
       _ => null,
     };
@@ -179,13 +233,15 @@ final class SearchResponseMapper {
   }
 
   List<Map<String, Object?>> _columnRuns(Object? column) {
-    final runs = _asList(
-      _at(column, const [
-        'musicResponsiveListItemFlexColumnRenderer',
-        'text',
-        'runs',
-      ]),
-    );
+    return _runsAt(column, const [
+      'musicResponsiveListItemFlexColumnRenderer',
+      'text',
+      'runs',
+    ]);
+  }
+
+  List<Map<String, Object?>> _runsAt(Object? value, List<String> path) {
+    final runs = _asList(_at(value, path));
     if (runs == null) {
       return const [];
     }

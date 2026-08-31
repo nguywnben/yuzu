@@ -23,7 +23,10 @@ class SearchScreen extends StatefulWidget {
 }
 
 class _SearchScreenState extends State<SearchScreen> {
+  static const _searchDebounceDuration = Duration(milliseconds: 350);
+
   late SearchViewModel _viewModel;
+  Timer? _searchDebounce;
 
   @override
   void initState() {
@@ -56,8 +59,26 @@ class _SearchScreenState extends State<SearchScreen> {
     }
   }
 
+  void _scheduleSearch(String query) {
+    _searchDebounce?.cancel();
+    if (query.trim().isEmpty) {
+      unawaited(_viewModel.search(query));
+      return;
+    }
+    _searchDebounce = Timer(
+      _searchDebounceDuration,
+      () => unawaited(_viewModel.search(query)),
+    );
+  }
+
+  void _submitSearch(String query) {
+    _searchDebounce?.cancel();
+    unawaited(_viewModel.search(query));
+  }
+
   @override
   void dispose() {
+    _searchDebounce?.cancel();
     _unbindViewModel();
     super.dispose();
   }
@@ -74,7 +95,8 @@ class _SearchScreenState extends State<SearchScreen> {
             child: SearchBar(
               hintText: 'Songs, artists, albums',
               leading: const Icon(Icons.search_rounded),
-              onChanged: (query) => unawaited(_viewModel.search(query)),
+              onChanged: _scheduleSearch,
+              onSubmitted: _submitSearch,
             ),
           ),
         ),
@@ -130,6 +152,8 @@ class _SearchScreenState extends State<SearchScreen> {
           icon: Icons.cloud_off_outlined,
           title: "Search couldn't finish",
           message: _viewModel.errorMessage,
+          actionLabel: 'Try again',
+          onAction: () => _viewModel.search(_viewModel.query),
         ),
       ],
     };
@@ -203,11 +227,15 @@ class _SearchMessage extends StatelessWidget {
     required this.icon,
     required this.title,
     required this.message,
-  });
+    this.actionLabel,
+    this.onAction,
+  }) : assert((actionLabel == null) == (onAction == null));
 
   final IconData icon;
   final String title;
   final String message;
+  final String? actionLabel;
+  final Future<void> Function()? onAction;
 
   @override
   Widget build(BuildContext context) {
@@ -231,6 +259,14 @@ class _SearchMessage extends StatelessWidget {
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.bodyLarge,
             ),
+            if (actionLabel case final actionLabel?) ...[
+              const SizedBox(height: 24),
+              FilledButton.icon(
+                onPressed: () => unawaited(onAction!()),
+                icon: const Icon(Icons.refresh_rounded),
+                label: Text(actionLabel),
+              ),
+            ],
           ],
         ),
       ),

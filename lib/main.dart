@@ -1,6 +1,7 @@
 import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
 
+import 'app/default_dependencies.dart';
 import 'app/yuzu_app.dart';
 import 'platform/audio/yuzu_audio_handler.dart';
 
@@ -14,5 +15,10 @@ Future<void> main() async {
       androidNotificationOngoing: false,
     ),
   );
-  runApp(YuzuApp(playbackDriver: audioHandler));
+  runApp(
+    YuzuApp(
+      musicProvider: createDefaultMusicProvider(),
+      playbackDriver: audioHandler,
+    ),
+  );
 }

@@ -59,7 +59,19 @@
                                 "musicResponsiveListItemFlexColumnRenderer": {
                                   "text": {
                                     "runs": [
-                                      { "text": "Song" },
+                                      {
+                                        "text": "Yuzu Lab",
+                                        "navigationEndpoint": {
+                                          "browseEndpoint": {
+                                            "browseId": "fixture-artist-001",
+                                            "browseEndpointContextSupportedConfigs": {
+                                              "browseEndpointContextMusicConfig": {
+                                                "pageType": "MUSIC_PAGE_TYPE_ARTIST"
+                                              }
+                                            }
+                                          }
+                                        }
+                                      },
                                       { "text": " • " },
                                       { "text": "3:42" }
                                     ]
@@ -110,8 +122,6 @@
                                 "musicResponsiveListItemFlexColumnRenderer": {
                                   "text": {
                                     "runs": [
-                                      { "text": "Album" },
-                                      { "text": " • " },
                                       {
                                         "text": "Yuzu Lab",
                                         "navigationEndpoint": {
@@ -162,7 +172,7 @@
                                 "musicResponsiveListItemFlexColumnRenderer": {
                                   "text": {
                                     "runs": [
-                                      { "text": "Artist" }
+                                      { "text": "1K subscribers" }
                                     ]
                                   }
                                 }
