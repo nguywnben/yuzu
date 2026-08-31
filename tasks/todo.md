@@ -117,10 +117,11 @@
 
 ## Task 15 — Live Search slice
 
-- [ ] Guest Search returns tracks, albums, and artists through the existing `MusicProvider`.
-- [ ] Loading, empty, retry, and upstream-error states render correctly with Material 3.
-- [ ] Dependency injection can switch between fake and live providers without modifying feature UI.
+- [x] Guest Search returns tracks, albums, and artists through the existing `MusicProvider`.
+- [x] Loading, empty, retry, and upstream-error states render correctly with Material 3.
+- [x] Dependency injection can switch between fake and live providers without modifying feature UI.
 - Verify: unit/widget tests and a manual check on a network-connected Android device.
+- Host live-smoke checks passed for track/artist and album queries on 2026-08-31. The Android Studio AVD check remains pending because the configured AVD cannot start until Android Emulator hardware acceleration is available.
 - Dependencies: Task 14 and the Upstream policy checkpoint.
 - Files likely touched: live provider/search mapper, DI bootstrap, and focused tests.
 - Estimated scope: Medium (3–5 files).
