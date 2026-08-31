@@ -3,8 +3,10 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:yuzu/app/yuzu_app.dart';
 import 'package:yuzu/data/fake/fake_music_provider.dart';
 import 'package:yuzu/domain/media/home_page.dart';
+import 'package:yuzu/domain/media/home_section.dart';
 import 'package:yuzu/domain/media/music_provider.dart';
 import 'package:yuzu/domain/media/search_result.dart';
+import 'package:yuzu/domain/media/track.dart';
 
 void main() {
   testWidgets('Home renders catalog sections after loading', (tester) async {
@@ -41,6 +43,33 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text("Home couldn't load"), findsOneWidget);
     expect(find.text('Try again'), findsOneWidget);
+  });
+
+  testWidgets('Home loads another page and retries without losing content', (
+    tester,
+  ) async {
+    final provider = _FlakyPagedHomeProvider();
+    await tester.pumpWidget(YuzuApp(musicProvider: provider));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Citrus Morning'), findsOneWidget);
+    expect(find.widgetWithText(OutlinedButton, 'Load more'), findsOneWidget);
+
+    await tester.tap(find.widgetWithText(OutlinedButton, 'Load more'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Citrus Morning'), findsOneWidget);
+    expect(find.text('Unable to load more music right now.'), findsOneWidget);
+    expect(
+      find.widgetWithText(FilledButton, 'Try loading more'),
+      findsOneWidget,
+    );
+
+    await tester.tap(find.widgetWithText(FilledButton, 'Try loading more'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Paper Horizon'), findsOneWidget);
+    expect(find.text('Unable to load more music right now.'), findsNothing);
   });
 
   testWidgets('Search returns matching tracks', (tester) async {
@@ -155,4 +184,53 @@ final class _CountingSearchProvider implements MusicProvider {
     queries.add(query);
     return _delegate.search(query);
   }
+}
+
+final class _FlakyPagedHomeProvider implements MusicProvider {
+  var _continuationAttempts = 0;
+
+  final _firstTrack = Track(
+    id: 'track-1',
+    title: 'Citrus Morning',
+    artists: const ['Yuzu Studio'],
+    duration: const Duration(minutes: 3),
+  );
+  final _secondTrack = Track(
+    id: 'track-2',
+    title: 'Paper Horizon',
+    artists: const ['North Window'],
+    duration: const Duration(minutes: 4),
+  );
+
+  @override
+  Future<HomePage> fetchHome({String? continuationToken}) async {
+    if (continuationToken == null) {
+      return HomePage(
+        sections: [
+          HomeSection(
+            id: 'made-for-yuzu',
+            title: 'Made for Yuzu',
+            tracks: [_firstTrack],
+          ),
+        ],
+        continuationToken: 'home-page-2',
+      );
+    }
+    _continuationAttempts++;
+    if (_continuationAttempts == 1) {
+      throw const MusicProviderException('Fixture continuation failure.');
+    }
+    return HomePage(
+      sections: [
+        HomeSection(
+          id: 'fresh-arrivals',
+          title: 'Fresh arrivals',
+          tracks: [_secondTrack],
+        ),
+      ],
+    );
+  }
+
+  @override
+  Future<List<SearchResult>> search(String query) async => const [];
 }

@@ -88,6 +88,17 @@ class _HomeScreenState extends State<HomeScreen> {
             section: section,
             onTrackSelected: widget.onTrackSelected,
           ),
+        if (_viewModel.hasMore ||
+            _viewModel.isLoadingMore ||
+            _viewModel.loadMoreErrorMessage.isNotEmpty)
+          SliverToBoxAdapter(
+            child: _HomePaginationFooter(
+              hasMore: _viewModel.hasMore,
+              isLoading: _viewModel.isLoadingMore,
+              errorMessage: _viewModel.loadMoreErrorMessage,
+              onLoadMore: _viewModel.loadMore,
+            ),
+          ),
         const SliverToBoxAdapter(child: SizedBox(height: 32)),
       ],
       HomeStatus.empty => [
@@ -109,6 +120,65 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ],
     };
+  }
+}
+
+class _HomePaginationFooter extends StatelessWidget {
+  const _HomePaginationFooter({
+    required this.hasMore,
+    required this.isLoading,
+    required this.errorMessage,
+    required this.onLoadMore,
+  });
+
+  final bool hasMore;
+  final bool isLoading;
+  final String errorMessage;
+  final Future<void> Function() onLoadMore;
+
+  @override
+  Widget build(BuildContext context) {
+    return Semantics(
+      liveRegion: true,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(20, 24, 20, 8),
+        child: Center(
+          child: switch ((isLoading, errorMessage.isNotEmpty, hasMore)) {
+            (true, _, _) => const SizedBox.square(
+              dimension: 32,
+              child: CircularProgressIndicator(strokeWidth: 3),
+            ),
+            (false, true, true) => Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  errorMessage,
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+                const SizedBox(height: 12),
+                FilledButton.icon(
+                  onPressed: () => unawaited(onLoadMore()),
+                  icon: const Icon(Icons.refresh_rounded),
+                  label: const Text('Try loading more'),
+                ),
+              ],
+            ),
+            (false, true, false) => Text(
+              errorMessage,
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+            (false, false, true) => OutlinedButton.icon(
+              onPressed: () => unawaited(onLoadMore()),
+              icon: const Icon(Icons.expand_more_rounded),
+              label: const Text('Load more'),
+            ),
+            (false, false, false) => const SizedBox.shrink(),
+          },
+        ),
+      ),
+    );
   }
 }
 

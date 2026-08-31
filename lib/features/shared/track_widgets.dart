@@ -26,23 +26,49 @@ class TrackArtwork extends StatelessWidget {
     final colors = alternate.isEven
         ? [colorScheme.primaryContainer, colorScheme.tertiaryContainer]
         : [colorScheme.secondaryContainer, colorScheme.primaryContainer];
+    final fallback = _ArtworkFallback(colors: colors, size: size);
+    final artworkUri = track.artworkUri;
 
     return ExcludeSemantics(
-      child: Container(
-        width: size,
-        height: size,
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: colors,
-          ),
-          borderRadius: BorderRadius.circular(borderRadius),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(borderRadius),
+        child: SizedBox.square(
+          dimension: size,
+          child: artworkUri == null
+              ? fallback
+              : Image.network(
+                  artworkUri.toString(),
+                  fit: BoxFit.cover,
+                  filterQuality: FilterQuality.medium,
+                  errorBuilder: (_, _, _) => fallback,
+                ),
         ),
+      ),
+    );
+  }
+}
+
+class _ArtworkFallback extends StatelessWidget {
+  const _ArtworkFallback({required this.colors, required this.size});
+
+  final List<Color> colors;
+  final double size;
+
+  @override
+  Widget build(BuildContext context) {
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: colors,
+        ),
+      ),
+      child: Center(
         child: Icon(
           Icons.music_note_rounded,
           size: size * 0.34,
-          color: colorScheme.onPrimaryContainer,
+          color: Theme.of(context).colorScheme.onPrimaryContainer,
         ),
       ),
     );
