@@ -3,7 +3,6 @@ import 'dart:convert';
 import '../../domain/media/home_page.dart';
 import '../../domain/media/home_section.dart';
 import '../../domain/media/search_result.dart';
-import '../../domain/media/track.dart';
 import 'catalog_error.dart';
 import 'search_response_mapper.dart';
 import 'transport.dart';
@@ -80,6 +79,16 @@ final class HomeResponseMapper {
               return sectionList;
             }
           }
+          for (final key in const [
+            'appendContinuationItemsAction',
+            'reloadContinuationItemsCommand',
+          ]) {
+            final action = map[key];
+            if (action is Map<String, Object?> &&
+                action['continuationItems'] is List<Object?>) {
+              return {'contents': action['continuationItems']};
+            }
+          }
           for (final child in map.values) {
             stack.add(_TraversalEntry(child, entry.depth + 1));
           }
@@ -111,20 +120,18 @@ final class HomeResponseMapper {
     if (title == null) {
       return null;
     }
-    final tracksById = <String, Track>{};
+    final itemsById = <String, SearchResult>{};
     for (final result in _itemMapper.mapDecoded(renderer)) {
-      if (result case TrackSearchResult(:final track)) {
-        tracksById.putIfAbsent(track.id, () => track);
-      }
+      itemsById.putIfAbsent('${result.runtimeType}:${result.id}', () => result);
     }
-    if (tracksById.isEmpty) {
+    if (itemsById.isEmpty) {
       return null;
     }
 
-    return HomeSection(
+    return HomeSection.items(
       id: _sectionId(title, index),
       title: title,
-      tracks: tracksById.values.toList(growable: false),
+      items: itemsById.values.toList(growable: false),
     );
   }
 

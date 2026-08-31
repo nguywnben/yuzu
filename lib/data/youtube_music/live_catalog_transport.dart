@@ -21,6 +21,7 @@ final class YoutubeMusicCatalogTransport implements CatalogTransport {
   static const _homeBrowseId = 'FEmusic_home';
   static const _bootstrapMaxBytes = 512 * 1024;
   static const _maxContinuationBytes = 2048;
+  static const _maxAnonymousContextBytes = 512;
   static const _userAgent =
       'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 '
       '(KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36';
@@ -37,6 +38,7 @@ final class YoutubeMusicCatalogTransport implements CatalogTransport {
 
   final CatalogHttpClientFactory _clientFactory;
   _GuestClientConfig? _config;
+  String? _anonymousBrowseContext;
 
   @override
   Future<CatalogTransportResponse> send(CatalogTransportRequest request) async {
@@ -68,6 +70,9 @@ final class YoutubeMusicCatalogTransport implements CatalogTransport {
     final path = request.operation == CatalogOperation.search
         ? _searchPath
         : _browsePath;
+    final anonymousContext = request.operation == CatalogOperation.search
+        ? null
+        : _anonymousBrowseContext;
     final uri = Uri.https('music.youtube.com', path, {
       'prettyPrint': 'false',
       'key': config.apiKey,
@@ -90,6 +95,7 @@ final class YoutubeMusicCatalogTransport implements CatalogTransport {
         'x-origin': 'https://music.youtube.com',
         'x-youtube-client-name': config.clientName,
         'x-youtube-client-version': config.clientVersion,
+        'x-goog-visitor-id': ?anonymousContext,
       })
       ..bodyBytes = utf8.encode(
         jsonEncode({
@@ -103,6 +109,7 @@ final class YoutubeMusicCatalogTransport implements CatalogTransport {
               'clientFormFactor': 'UNKNOWN_FORM_FACTOR',
               'userAgent': _userAgent,
               'timeZone': 'UTC',
+              'visitorData': ?anonymousContext,
             },
             'request': {'useSsl': true},
             'user': <String, Object?>{},
@@ -117,7 +124,31 @@ final class YoutubeMusicCatalogTransport implements CatalogTransport {
       maxResponseBytes: request.maxResponseBytes,
     );
     _validateStatus(response.statusCode);
+    if (request.operation != CatalogOperation.search) {
+      _captureAnonymousBrowseContext(response.bodyBytes);
+    }
     return response;
+  }
+
+  void _captureAnonymousBrowseContext(Uint8List bodyBytes) {
+    try {
+      final decoded = jsonDecode(utf8.decode(bodyBytes));
+      if (decoded is! Map<String, Object?>) {
+        return;
+      }
+      final responseContext = decoded['responseContext'];
+      if (responseContext is! Map<String, Object?>) {
+        return;
+      }
+      final value = responseContext['visitorData'];
+      if (value is String &&
+          value.trim().isNotEmpty &&
+          utf8.encode(value).length <= _maxAnonymousContextBytes) {
+        _anonymousBrowseContext = value;
+      }
+    } on FormatException {
+      // Mapping owns response-shape validation; context capture is best effort.
+    }
   }
 
   Future<_GuestClientConfig> _bootstrap({

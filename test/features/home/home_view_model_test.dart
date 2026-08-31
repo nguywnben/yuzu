@@ -94,7 +94,58 @@ void main() {
       expect(viewModel.hasMore, isFalse);
       expect(viewModel.loadMoreErrorMessage, isNotEmpty);
     });
+
+    test(
+      'merges non-track discovery items without losing their types',
+      () async {
+        final viewModel = HomeViewModel(_MixedPagedHomeProvider());
+
+        await viewModel.load();
+        await viewModel.loadMore();
+
+        expect(viewModel.sections.single.items, hasLength(2));
+        expect(viewModel.sections.single.items.first, isA<AlbumSearchResult>());
+        expect(
+          viewModel.sections.single.items.last,
+          isA<PlaylistSearchResult>(),
+        );
+        expect(viewModel.sections.single.tracks, isEmpty);
+      },
+    );
   });
+}
+
+final class _MixedPagedHomeProvider implements MusicProvider {
+  @override
+  Future<HomePage> fetchHome({String? continuationToken}) async {
+    return HomePage(
+      sections: [
+        HomeSection.items(
+          id: 'guest-discovery',
+          title: 'Guest discovery',
+          items: continuationToken == null
+              ? [
+                  AlbumSearchResult(
+                    id: 'orange-hours',
+                    title: 'Orange Hours',
+                    artists: const ['Yuzu Studio'],
+                  ),
+                ]
+              : [
+                  PlaylistSearchResult(
+                    id: 'citrus-mix',
+                    title: 'Citrus Mix',
+                    subtitle: 'Yuzu Studio and more',
+                  ),
+                ],
+        ),
+      ],
+      continuationToken: continuationToken == null ? 'mixed-page-2' : null,
+    );
+  }
+
+  @override
+  Future<List<SearchResult>> search(String query) async => const [];
 }
 
 final class _PagedHomeProvider implements MusicProvider {

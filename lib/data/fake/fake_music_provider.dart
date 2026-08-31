@@ -62,6 +62,11 @@ final class FakeMusicProvider implements MusicProvider {
       artists: const ['Yuzu Sessions'],
     ),
     ArtistSearchResult(id: 'yuzu-sessions', name: 'Yuzu Sessions'),
+    PlaylistSearchResult(
+      id: 'citrus-mix',
+      title: 'Citrus Mix',
+      subtitle: 'Yuzu Sessions and more',
+    ),
   ];
 
   @override
@@ -109,6 +114,8 @@ final class FakeMusicProvider implements MusicProvider {
                 AlbumSearchResult(:final title, :final artistLabel) =>
                   '$title $artistLabel',
                 ArtistSearchResult(:final name) => name,
+                PlaylistSearchResult(:final title, :final subtitle) =>
+                  '$title $subtitle',
               }.toLowerCase();
               return searchableText.contains(normalizedQuery);
             })

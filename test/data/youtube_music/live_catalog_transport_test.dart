@@ -78,6 +78,57 @@ void main() {
       expect(transport.toString(), isNot(contains('invented-home-page-2')));
     });
 
+    test('keeps anonymous browse context in memory for continuation', () async {
+      final requests = <http.Request>[];
+      final anonymousContext = ['invented', 'anonymous', 'context'].join('-');
+      var postCount = 0;
+      final transport = YoutubeMusicCatalogTransport(
+        clientFactory: () => MockClient((request) async {
+          requests.add(request);
+          if (request.method == 'GET') {
+            return _bootstrapResponse();
+          }
+          postCount++;
+          return http.Response(
+            postCount == 1
+                ? jsonEncode({
+                    'responseContext': {'visitorData': anonymousContext},
+                    'contents': <String, Object?>{},
+                  })
+                : '{"continuationContents":{}}',
+            200,
+            headers: {'content-type': 'application/json'},
+          );
+        }),
+      );
+
+      await transport.send(
+        CatalogTransportRequest.json(
+          operation: CatalogOperation.home,
+          payload: const {},
+          maxAttempts: 1,
+        ),
+      );
+      await transport.send(
+        CatalogTransportRequest.json(
+          operation: CatalogOperation.continuation,
+          payload: const {'continuation': 'invented-page-2'},
+          maxAttempts: 1,
+        ),
+      );
+
+      final continuationRequest = requests.last;
+      final body = jsonDecode(continuationRequest.body) as Map<String, Object?>;
+      final context = body['context'] as Map<String, Object?>;
+      final client = context['client'] as Map<String, Object?>;
+      expect(client['visitorData'], anonymousContext);
+      expect(
+        continuationRequest.headers['x-goog-visitor-id'],
+        anonymousContext,
+      );
+      expect(transport.toString(), isNot(contains(anonymousContext)));
+    });
+
     test(
       'rejects malformed Home continuation input before networking',
       () async {

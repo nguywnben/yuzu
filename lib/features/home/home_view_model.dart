@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 
 import '../../domain/media/home_section.dart';
 import '../../domain/media/music_provider.dart';
+import '../../domain/media/search_result.dart';
 
 enum HomeStatus { idle, loading, ready, empty, failure }
 
@@ -102,16 +103,20 @@ final class HomeViewModel extends ChangeNotifier {
       }
 
       final existing = merged[matchingIndex];
-      final tracksById = {for (final track in existing.tracks) track.id: track};
-      for (final track in nextSection.tracks) {
-        tracksById.putIfAbsent(track.id, () => track);
+      final itemsById = {
+        for (final item in existing.items) _itemKey(item): item,
+      };
+      for (final item in nextSection.items) {
+        itemsById.putIfAbsent(_itemKey(item), () => item);
       }
-      merged[matchingIndex] = HomeSection(
+      merged[matchingIndex] = HomeSection.items(
         id: existing.id,
         title: existing.title,
-        tracks: tracksById.values.toList(growable: false),
+        items: itemsById.values.toList(growable: false),
       );
     }
     return List.unmodifiable(merged);
   }
+
+  String _itemKey(SearchResult item) => '${item.runtimeType}:${item.id}';
 }

@@ -67,6 +67,28 @@ final class ArtistSearchResult extends SearchResult {
   String get title => name;
 }
 
+final class PlaylistSearchResult extends SearchResult {
+  PlaylistSearchResult({
+    required String id,
+    required String title,
+    required String subtitle,
+    this.artworkUri,
+  }) : id = _requireText(id, 'id'),
+       title = _requireText(title, 'title'),
+       subtitle = _requireText(subtitle, 'subtitle');
+
+  @override
+  final String id;
+
+  @override
+  final String title;
+
+  final String subtitle;
+
+  @override
+  final Uri? artworkUri;
+}
+
 String _requireText(String value, String fieldName) {
   if (value.trim().isEmpty) {
     throw ArgumentError.value(value, fieldName, 'must not be blank');

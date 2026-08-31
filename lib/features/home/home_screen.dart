@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import '../../domain/media/home_section.dart';
 import '../../domain/media/music_provider.dart';
+import '../../domain/media/search_result.dart';
 import '../../domain/media/track.dart';
 import '../shared/track_widgets.dart';
 import 'home_view_model.dart';
@@ -207,15 +208,15 @@ class _HomeSectionView extends StatelessWidget {
             child: ListView.separated(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               scrollDirection: Axis.horizontal,
-              itemCount: section.tracks.length,
+              itemCount: section.items.length,
               separatorBuilder: (_, _) => const SizedBox(width: 14),
               itemBuilder: (context, index) {
-                final track = section.tracks[index];
-                return _TrackCard(
-                  track: track,
-                  onTap: onTrackSelected == null
+                final item = section.items[index];
+                return _CatalogCard(
+                  item: item,
+                  onTrackSelected: onTrackSelected == null
                       ? null
-                      : () => onTrackSelected!(track, section.tracks),
+                      : (track) => onTrackSelected!(track, section.tracks),
                 );
               },
             ),
@@ -226,14 +227,32 @@ class _HomeSectionView extends StatelessWidget {
   }
 }
 
-class _TrackCard extends StatelessWidget {
-  const _TrackCard({required this.track, this.onTap});
+class _CatalogCard extends StatelessWidget {
+  const _CatalogCard({required this.item, this.onTrackSelected});
 
-  final Track track;
-  final VoidCallback? onTap;
+  final SearchResult item;
+  final ValueChanged<Track>? onTrackSelected;
 
   @override
   Widget build(BuildContext context) {
+    final (subtitle, fallbackIcon, onTap) = switch (item) {
+      TrackSearchResult(:final track) => (
+        track.artistLabel,
+        Icons.music_note_rounded,
+        onTrackSelected == null ? null : () => onTrackSelected!(track),
+      ),
+      AlbumSearchResult(:final artistLabel) => (
+        artistLabel,
+        Icons.album_rounded,
+        null,
+      ),
+      ArtistSearchResult() => ('Artist', Icons.person_rounded, null),
+      PlaylistSearchResult(:final subtitle) => (
+        subtitle,
+        Icons.queue_music_rounded,
+        null,
+      ),
+    };
     return SizedBox(
       width: 156,
       child: InkWell(
@@ -242,17 +261,22 @@ class _TrackCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            TrackArtwork(track: track, size: 156),
+            CatalogArtwork(
+              id: item.id,
+              artworkUri: item.artworkUri,
+              size: 156,
+              fallbackIcon: fallbackIcon,
+            ),
             const SizedBox(height: 10),
             Text(
-              track.title,
+              item.title,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: Theme.of(context).textTheme.titleMedium,
             ),
             const SizedBox(height: 2),
             Text(
-              track.artistLabel,
+              subtitle,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: Theme.of(context).textTheme.bodyMedium,

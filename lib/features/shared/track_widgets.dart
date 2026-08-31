@@ -18,16 +18,44 @@ class TrackArtwork extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final alternate = track.id.codeUnits.fold<int>(
-      0,
-      (sum, unit) => sum + unit,
+    return CatalogArtwork(
+      id: track.id,
+      artworkUri: track.artworkUri,
+      size: size,
+      borderRadius: borderRadius,
+      fallbackIcon: Icons.music_note_rounded,
     );
+  }
+}
+
+class CatalogArtwork extends StatelessWidget {
+  const CatalogArtwork({
+    super.key,
+    required this.id,
+    required this.size,
+    required this.fallbackIcon,
+    this.artworkUri,
+    this.borderRadius = 20,
+  });
+
+  final String id;
+  final Uri? artworkUri;
+  final double size;
+  final double borderRadius;
+  final IconData fallbackIcon;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final alternate = id.codeUnits.fold<int>(0, (sum, unit) => sum + unit);
     final colors = alternate.isEven
         ? [colorScheme.primaryContainer, colorScheme.tertiaryContainer]
         : [colorScheme.secondaryContainer, colorScheme.primaryContainer];
-    final fallback = _ArtworkFallback(colors: colors, size: size);
-    final artworkUri = track.artworkUri;
+    final fallback = _ArtworkFallback(
+      colors: colors,
+      size: size,
+      icon: fallbackIcon,
+    );
 
     return ExcludeSemantics(
       child: ClipRRect(
@@ -49,10 +77,15 @@ class TrackArtwork extends StatelessWidget {
 }
 
 class _ArtworkFallback extends StatelessWidget {
-  const _ArtworkFallback({required this.colors, required this.size});
+  const _ArtworkFallback({
+    required this.colors,
+    required this.size,
+    required this.icon,
+  });
 
   final List<Color> colors;
   final double size;
+  final IconData icon;
 
   @override
   Widget build(BuildContext context) {
@@ -66,7 +99,7 @@ class _ArtworkFallback extends StatelessWidget {
       ),
       child: Center(
         child: Icon(
-          Icons.music_note_rounded,
+          icon,
           size: size * 0.34,
           color: Theme.of(context).colorScheme.onPrimaryContainer,
         ),

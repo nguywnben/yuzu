@@ -26,6 +26,19 @@ void main() {
     expect(find.text('Sunrise Drive'), findsOneWidget);
   });
 
+  testWidgets('Home renders album and playlist discovery cards', (
+    tester,
+  ) async {
+    await tester.pumpWidget(YuzuApp(musicProvider: _MixedHomeProvider()));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Guest discovery'), findsOneWidget);
+    expect(find.text('Orange Hours'), findsOneWidget);
+    expect(find.text('Citrus Mix'), findsOneWidget);
+    expect(find.byIcon(Icons.album_rounded), findsOneWidget);
+    expect(find.byIcon(Icons.queue_music_rounded), findsOneWidget);
+  });
+
   testWidgets('Home renders empty and failure states', (tester) async {
     await tester.pumpWidget(
       YuzuApp(
@@ -99,6 +112,11 @@ void main() {
     expect(find.text('Track'), findsWidgets);
     expect(find.text('Album'), findsOneWidget);
     expect(find.text('Artist'), findsOneWidget);
+
+    await tester.enterText(find.byType(SearchBar), 'citrus mix');
+    await tester.pump(const Duration(milliseconds: 350));
+    await tester.pumpAndSettle();
+    expect(find.text('Playlist'), findsOneWidget);
   });
 
   testWidgets('Search debounces rapid query edits before using the provider', (
@@ -151,6 +169,33 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('Sunrise Drive'), findsOneWidget);
   });
+}
+
+final class _MixedHomeProvider implements MusicProvider {
+  @override
+  Future<HomePage> fetchHome({String? continuationToken}) async => HomePage(
+    sections: [
+      HomeSection.items(
+        id: 'guest-discovery',
+        title: 'Guest discovery',
+        items: [
+          AlbumSearchResult(
+            id: 'orange-hours',
+            title: 'Orange Hours',
+            artists: const ['Yuzu Studio'],
+          ),
+          PlaylistSearchResult(
+            id: 'citrus-mix',
+            title: 'Citrus Mix',
+            subtitle: 'Yuzu Studio and more',
+          ),
+        ],
+      ),
+    ],
+  );
+
+  @override
+  Future<List<SearchResult>> search(String query) async => const [];
 }
 
 final class _FlakySearchProvider implements MusicProvider {

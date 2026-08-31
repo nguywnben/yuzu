@@ -184,6 +184,11 @@ class _SearchResultTile extends StatelessWidget {
         const _ResultSubtitle(category: 'Artist'),
         null,
       ),
+      PlaylistSearchResult(:final subtitle) => (
+        Icons.queue_music_rounded,
+        _ResultSubtitle(category: 'Playlist', detail: subtitle),
+        null,
+      ),
     };
     final colorScheme = Theme.of(context).colorScheme;
 

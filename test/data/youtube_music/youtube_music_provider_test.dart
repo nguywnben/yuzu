@@ -20,7 +20,13 @@ void main() {
     expect(results.whereType<TrackSearchResult>(), hasLength(1));
     expect(results.whereType<AlbumSearchResult>(), hasLength(1));
     expect(results.whereType<ArtistSearchResult>(), hasLength(1));
-    expect(firstHomePage.sections.single.title, 'Made for Yuzu');
+    expect(firstHomePage.sections, hasLength(3));
+    expect(firstHomePage.sections.first.title, 'Made for Yuzu');
+    expect(firstHomePage.sections[1].items.single, isA<AlbumSearchResult>());
+    expect(
+      firstHomePage.sections.last.items.single,
+      isA<PlaylistSearchResult>(),
+    );
     expect(firstHomePage.continuationToken, 'invented-home-page-2');
     expect(secondHomePage.sections.single.title, 'Fresh arrivals');
     expect(secondHomePage.continuationToken, isNull);

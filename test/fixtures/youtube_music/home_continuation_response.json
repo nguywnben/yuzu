@@ -47,6 +47,17 @@
                               }
                             },
                             { "text": " • " },
+                            { "text": "Song" }
+                          ]
+                        }
+                      }
+                    }
+                  ],
+                  "fixedColumns": [
+                    {
+                      "musicResponsiveListItemFixedColumnRenderer": {
+                        "text": {
+                          "runs": [
                             { "text": "4:02" }
                           ]
                         }

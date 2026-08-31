@@ -122,19 +122,21 @@
 - [x] Dependency injection can switch between fake and live providers without modifying feature UI.
 - Verify: unit/widget tests and a manual check on a network-connected Android device.
 - Host live-smoke checks passed for track/artist and album queries on 2026-08-31. The Android Studio AVD check remains pending because the configured AVD cannot start until Android Emulator hardware acceleration is available.
+- The maintainer confirmed live Search results on a physical Android device on 2026-08-31.
 - Dependencies: Task 14 and the Upstream policy checkpoint.
 - Files likely touched: live provider/search mapper, DI bootstrap, and focused tests.
 - Estimated scope: Medium (3–5 files).
 
 ## Task 16 — Live Home slice
 
-- [ ] Guest Home returns sections through the provider contract.
-- [ ] Continuations do not create duplicate items or request loops.
-- [ ] Empty, malformed, and timeout responses produce typed failures and bounded retries.
+- [x] Guest Home returns mixed album and playlist sections through the provider contract.
+- [x] Continuations do not create duplicate items or request loops.
+- [x] Empty, malformed, and timeout responses produce typed failures and bounded retries.
 - Verify: focused tests, the full suite, and a manual Home flow.
 - Dependencies: Task 15.
 - Files likely touched: Home mapper/provider, ViewModel integration, and focused tests.
 - Estimated scope: Medium (3–5 files).
+- Host live-smoke checks passed for the first guest Home page and its continuation on 2026-08-31. Physical Android Home verification is pending installation of the Wave 6A APK.
 
 ## Task 17 — Album detail slice
 
