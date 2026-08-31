@@ -1,8 +1,8 @@
-import 'home_section.dart';
+import 'home_page.dart';
 import 'search_result.dart';
 
 abstract interface class MusicProvider {
-  Future<List<HomeSection>> fetchHome();
+  Future<HomePage> fetchHome({String? continuationToken});
 
   Future<List<SearchResult>> search(String query);
 }

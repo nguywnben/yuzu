@@ -2,7 +2,9 @@
 
 Yuzu is an open-source, Android-first music player built with Flutter and Material Design 3.
 
-The project is currently in its foundation phase. The first milestone uses a fake catalog and test playback to establish the architecture, interface, and test coverage before connecting a YouTube Music backend.
+The current discovery milestone connects guest-only Search and Home to YouTube Music through an isolated, unofficial adapter. Album, artist, and playlist detail pages are next; playback still uses the deterministic development driver until the dedicated live playback wave.
+
+Live access is read-only, requires no sign-in, and may stop working when the upstream service changes. The fake provider remains available for deterministic tests and offline development.
 
 ## Platform Support
 

@@ -1,0 +1,75 @@
+{
+  "continuationContents": {
+    "sectionListContinuation": {
+      "contents": [
+        {
+          "musicShelfRenderer": {
+            "title": {
+              "runs": [
+                { "text": "Fresh arrivals" }
+              ]
+            },
+            "contents": [
+              {
+                "musicResponsiveListItemRenderer": {
+                  "flexColumns": [
+                    {
+                      "musicResponsiveListItemFlexColumnRenderer": {
+                        "text": {
+                          "runs": [
+                            {
+                              "text": "Paper Horizon",
+                              "navigationEndpoint": {
+                                "watchEndpoint": {
+                                  "videoId": "fixture-home-track-002"
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "musicResponsiveListItemFlexColumnRenderer": {
+                        "text": {
+                          "runs": [
+                            {
+                              "text": "North Window",
+                              "navigationEndpoint": {
+                                "browseEndpoint": {
+                                  "browseId": "fixture-home-artist-002",
+                                  "browseEndpointContextSupportedConfigs": {
+                                    "browseEndpointContextMusicConfig": {
+                                      "pageType": "MUSIC_PAGE_TYPE_ARTIST"
+                                    }
+                                  }
+                                }
+                              }
+                            },
+                            { "text": " • " },
+                            { "text": "Song" }
+                          ]
+                        }
+                      }
+                    }
+                  ],
+                  "fixedColumns": [
+                    {
+                      "musicResponsiveListItemFixedColumnRenderer": {
+                        "text": {
+                          "runs": [
+                            { "text": "4:02" }
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

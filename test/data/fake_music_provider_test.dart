@@ -11,14 +11,14 @@ void main() {
       final first = await provider.fetchHome();
       final second = await provider.fetchHome();
 
-      expect(first.map((section) => section.id), [
+      expect(first.sections.map((section) => section.id), [
         'quick-picks',
         'new-for-you',
       ]);
-      expect(first.first.tracks, isNotEmpty);
+      expect(first.sections.first.tracks, isNotEmpty);
       expect(
-        second.first.tracks.map((track) => track.id),
-        first.first.tracks.map((track) => track.id),
+        second.sections.first.tracks.map((track) => track.id),
+        first.sections.first.tracks.map((track) => track.id),
       );
     });
 
@@ -40,7 +40,7 @@ void main() {
     test('can simulate an empty catalog', () async {
       final provider = FakeMusicProvider(scenario: FakeCatalogScenario.empty);
 
-      expect(await provider.fetchHome(), isEmpty);
+      expect((await provider.fetchHome()).sections, isEmpty);
       expect(await provider.search('sunrise'), isEmpty);
     });
 

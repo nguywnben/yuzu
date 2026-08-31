@@ -1,3 +1,4 @@
+import '../../domain/media/home_page.dart';
 import '../../domain/media/home_section.dart';
 import '../../domain/media/music_provider.dart';
 import '../../domain/media/search_result.dart';
@@ -61,27 +62,36 @@ final class FakeMusicProvider implements MusicProvider {
       artists: const ['Yuzu Sessions'],
     ),
     ArtistSearchResult(id: 'yuzu-sessions', name: 'Yuzu Sessions'),
+    PlaylistSearchResult(
+      id: 'citrus-mix',
+      title: 'Citrus Mix',
+      subtitle: 'Yuzu Sessions and more',
+    ),
   ];
 
   @override
-  Future<List<HomeSection>> fetchHome() async {
+  Future<HomePage> fetchHome({String? continuationToken}) async {
     await _waitForResponse();
     switch (scenario) {
       case FakeCatalogScenario.ready:
-        return [
-          HomeSection(
-            id: 'quick-picks',
-            title: 'Quick picks',
-            tracks: _catalog.take(4).toList(),
-          ),
-          HomeSection(
-            id: 'new-for-you',
-            title: 'New for you',
-            tracks: _catalog.skip(2).toList(),
-          ),
-        ];
+        return HomePage(
+          sections: continuationToken == null
+              ? [
+                  HomeSection(
+                    id: 'quick-picks',
+                    title: 'Quick picks',
+                    tracks: _catalog.take(4).toList(),
+                  ),
+                  HomeSection(
+                    id: 'new-for-you',
+                    title: 'New for you',
+                    tracks: _catalog.skip(2).toList(),
+                  ),
+                ]
+              : const [],
+        );
       case FakeCatalogScenario.empty:
-        return const [];
+        return HomePage(sections: const []);
       case FakeCatalogScenario.failure:
         throw const MusicProviderException('The test catalog is unavailable.');
     }
@@ -104,6 +114,8 @@ final class FakeMusicProvider implements MusicProvider {
                 AlbumSearchResult(:final title, :final artistLabel) =>
                   '$title $artistLabel',
                 ArtistSearchResult(:final name) => name,
+                PlaylistSearchResult(:final title, :final subtitle) =>
+                  '$title $subtitle',
               }.toLowerCase();
               return searchableText.contains(normalizedQuery);
             })

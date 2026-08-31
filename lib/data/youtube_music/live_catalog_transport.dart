@@ -17,7 +17,11 @@ final class YoutubeMusicCatalogTransport implements CatalogTransport {
 
   static final Uri _bootstrapUri = Uri.https('music.youtube.com', '/');
   static const _searchPath = '/youtubei/v1/search';
+  static const _browsePath = '/youtubei/v1/browse';
+  static const _homeBrowseId = 'FEmusic_home';
   static const _bootstrapMaxBytes = 512 * 1024;
+  static const _maxContinuationBytes = 2048;
+  static const _maxAnonymousContextBytes = 512;
   static const _userAgent =
       'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 '
       '(KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36';
@@ -34,20 +38,18 @@ final class YoutubeMusicCatalogTransport implements CatalogTransport {
 
   final CatalogHttpClientFactory _clientFactory;
   _GuestClientConfig? _config;
+  String? _anonymousBrowseContext;
 
   @override
   Future<CatalogTransportResponse> send(CatalogTransportRequest request) async {
-    if (request.operation != CatalogOperation.search) {
-      throw const CatalogFailure(CatalogFailureKind.policyDisabled);
-    }
     _throwIfCancelled(request.cancellationToken);
-    final query = _readQuery(request.bodyBytes);
+    final payload = _readOperationPayload(request);
 
     var attempt = 1;
     while (true) {
       _throwIfCancelled(request.cancellationToken);
       try {
-        return await _sendSearch(request, query);
+        return await _sendCatalogRequest(request, payload);
       } on CatalogFailure catch (failure) {
         if (!failure.canRetry || attempt == request.maxAttempts) {
           rethrow;
@@ -57,15 +59,21 @@ final class YoutubeMusicCatalogTransport implements CatalogTransport {
     }
   }
 
-  Future<CatalogTransportResponse> _sendSearch(
+  Future<CatalogTransportResponse> _sendCatalogRequest(
     CatalogTransportRequest request,
-    String query,
+    Map<String, Object?> operationPayload,
   ) async {
     final config = _config ??= await _bootstrap(
       timeout: request.timeout,
       cancellationToken: request.cancellationToken,
     );
-    final uri = Uri.https('music.youtube.com', _searchPath, {
+    final path = request.operation == CatalogOperation.search
+        ? _searchPath
+        : _browsePath;
+    final anonymousContext = request.operation == CatalogOperation.search
+        ? null
+        : _anonymousBrowseContext;
+    final uri = Uri.https('music.youtube.com', path, {
       'prettyPrint': 'false',
       'key': config.apiKey,
     });
@@ -87,6 +95,7 @@ final class YoutubeMusicCatalogTransport implements CatalogTransport {
         'x-origin': 'https://music.youtube.com',
         'x-youtube-client-name': config.clientName,
         'x-youtube-client-version': config.clientVersion,
+        'x-goog-visitor-id': ?anonymousContext,
       })
       ..bodyBytes = utf8.encode(
         jsonEncode({
@@ -100,11 +109,12 @@ final class YoutubeMusicCatalogTransport implements CatalogTransport {
               'clientFormFactor': 'UNKNOWN_FORM_FACTOR',
               'userAgent': _userAgent,
               'timeZone': 'UTC',
+              'visitorData': ?anonymousContext,
             },
             'request': {'useSsl': true},
             'user': <String, Object?>{},
           },
-          'query': query,
+          ...operationPayload,
         }),
       );
 
@@ -114,7 +124,31 @@ final class YoutubeMusicCatalogTransport implements CatalogTransport {
       maxResponseBytes: request.maxResponseBytes,
     );
     _validateStatus(response.statusCode);
+    if (request.operation != CatalogOperation.search) {
+      _captureAnonymousBrowseContext(response.bodyBytes);
+    }
     return response;
+  }
+
+  void _captureAnonymousBrowseContext(Uint8List bodyBytes) {
+    try {
+      final decoded = jsonDecode(utf8.decode(bodyBytes));
+      if (decoded is! Map<String, Object?>) {
+        return;
+      }
+      final responseContext = decoded['responseContext'];
+      if (responseContext is! Map<String, Object?>) {
+        return;
+      }
+      final value = responseContext['visitorData'];
+      if (value is String &&
+          value.trim().isNotEmpty &&
+          utf8.encode(value).length <= _maxAnonymousContextBytes) {
+        _anonymousBrowseContext = value;
+      }
+    } on FormatException {
+      // Mapping owns response-shape validation; context capture is best effort.
+    }
   }
 
   Future<_GuestClientConfig> _bootstrap({
@@ -210,17 +244,61 @@ final class YoutubeMusicCatalogTransport implements CatalogTransport {
     return builder.takeBytes();
   }
 
-  String _readQuery(Uint8List bodyBytes) {
+  Map<String, Object?> _readOperationPayload(CatalogTransportRequest request) {
+    final payload = _readJsonObject(request.bodyBytes);
+    return switch (request.operation) {
+      CatalogOperation.search => {'query': _readQuery(payload)},
+      CatalogOperation.home => _readHome(payload),
+      CatalogOperation.continuation => {
+        'continuation': _readContinuation(payload),
+      },
+      CatalogOperation.album ||
+      CatalogOperation.artist ||
+      CatalogOperation.playlist => throw const CatalogFailure(
+        CatalogFailureKind.policyDisabled,
+      ),
+    };
+  }
+
+  Map<String, Object?> _readJsonObject(Uint8List bodyBytes) {
     try {
       final payload = jsonDecode(utf8.decode(bodyBytes));
-      if (payload case {'query': final String query}) {
-        final normalized = query.trim();
-        if (normalized.isNotEmpty && normalized.length <= 200) {
-          return normalized;
-        }
+      if (payload is Map<String, Object?>) {
+        return payload;
       }
     } on FormatException {
       // Converted to the transport's stable failure taxonomy below.
+    }
+    throw const CatalogFailure(CatalogFailureKind.malformedResponse);
+  }
+
+  String _readQuery(Map<String, Object?> payload) {
+    if (payload case {'query': final String query}) {
+      final normalized = query.trim();
+      if (payload.length == 1 &&
+          normalized.isNotEmpty &&
+          normalized.length <= 200) {
+        return normalized;
+      }
+    }
+    throw const CatalogFailure(CatalogFailureKind.malformedResponse);
+  }
+
+  Map<String, Object?> _readHome(Map<String, Object?> payload) {
+    if (payload.isNotEmpty) {
+      throw const CatalogFailure(CatalogFailureKind.malformedResponse);
+    }
+    return const {'browseId': _homeBrowseId};
+  }
+
+  String _readContinuation(Map<String, Object?> payload) {
+    if (payload case {'continuation': final String token}) {
+      final normalized = token.trim();
+      if (payload.length == 1 &&
+          normalized.isNotEmpty &&
+          utf8.encode(normalized).length <= _maxContinuationBytes) {
+        return normalized;
+      }
     }
     throw const CatalogFailure(CatalogFailureKind.malformedResponse);
   }

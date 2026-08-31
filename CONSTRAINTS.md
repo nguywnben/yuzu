@@ -1,6 +1,6 @@
 # Constraints
 
-Last reviewed: 2026-08-30
+Last reviewed: 2026-08-31
 
 ## Floor
 
@@ -24,8 +24,8 @@ Last reviewed: 2026-08-30
 
 | Metric | Baseline | Direction |
 |---|---|---|
-| Test coverage | 93.4% line coverage (1077/1153), 2026-08-31 | Keep above 90%; tighten gradually after CI is added |
-| APK size | 174.4 MiB debug universal APK, 2026-08-31 | Track only for now; set a budget using release split APKs later |
+| Test coverage | 93.1% line coverage (1408/1513), 2026-08-31 | Keep above 90%; tighten gradually after CI is added |
+| APK size | 15.6–19.5 MiB per release ABI APK, 2026-08-31 | Keep each split APK below 25 MiB through the MVP |
 
 ## Exceptions
 

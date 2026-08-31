@@ -45,5 +45,17 @@ void main() {
       expect(album.artistLabel, 'Yuzu Lab, North Window');
       expect(artist.title, 'Yuzu Lab');
     });
+
+    test('keeps playlist metadata source-neutral', () {
+      final playlist = PlaylistSearchResult(
+        id: 'fixture-playlist',
+        title: 'Citrus Mix',
+        subtitle: 'Yuzu Lab and more',
+      );
+
+      expect(playlist.id, 'fixture-playlist');
+      expect(playlist.title, 'Citrus Mix');
+      expect(playlist.subtitle, 'Yuzu Lab and more');
+    });
   });
 }

@@ -77,8 +77,8 @@ Build the Flutter Android foundation and a complete music-listening vertical sli
 
 #### Wave 6A: Live Discovery
 
-- [ ] Task 15: Live Search implementation and host smoke checks are complete; the Android Studio AVD smoke check remains pending until emulator hardware acceleration is available.
-- [ ] Task 16: Implement live Home and continuation handling with TDD.
+- [x] Task 15: Live Search implementation, host smoke checks, and a physical Android check are complete.
+- [x] Task 16: Implement live Home and continuation handling with TDD.
 
 #### Wave 6B: Live Details
 

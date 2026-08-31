@@ -10,6 +10,155 @@ import 'package:yuzu/data/youtube_music/transport.dart';
 
 void main() {
   group('YoutubeMusicCatalogTransport', () {
+    test('bootstraps and sends a bounded guest Home request', () async {
+      final requests = <http.Request>[];
+      final transport = YoutubeMusicCatalogTransport(
+        clientFactory: () => MockClient((request) async {
+          requests.add(request);
+          if (request.method == 'GET') {
+            return _bootstrapResponse();
+          }
+          return http.Response(
+            '{"contents":{}}',
+            200,
+            headers: {'content-type': 'application/json'},
+          );
+        }),
+      );
+
+      await transport.send(
+        CatalogTransportRequest.json(
+          operation: CatalogOperation.home,
+          payload: const {},
+          maxAttempts: 1,
+        ),
+      );
+
+      expect(requests, hasLength(2));
+      final homeRequest = requests.last;
+      expect(homeRequest.method, 'POST');
+      expect(homeRequest.url.host, 'music.youtube.com');
+      expect(homeRequest.url.path, '/youtubei/v1/browse');
+      expect(homeRequest.headers, isNot(contains('cookie')));
+      final body = jsonDecode(homeRequest.body) as Map<String, Object?>;
+      expect(body['browseId'], 'FEmusic_home');
+      expect(body, isNot(contains('continuation')));
+    });
+
+    test('sends an opaque Home continuation without persisting it', () async {
+      final requests = <http.Request>[];
+      final transport = YoutubeMusicCatalogTransport(
+        clientFactory: () => MockClient((request) async {
+          requests.add(request);
+          if (request.method == 'GET') {
+            return _bootstrapResponse();
+          }
+          return http.Response(
+            '{"continuationContents":{}}',
+            200,
+            headers: {'content-type': 'application/json'},
+          );
+        }),
+      );
+
+      await transport.send(
+        CatalogTransportRequest.json(
+          operation: CatalogOperation.continuation,
+          payload: const {'continuation': 'invented-home-page-2'},
+          maxAttempts: 1,
+        ),
+      );
+
+      expect(requests, hasLength(2));
+      final continuationRequest = requests.last;
+      expect(continuationRequest.url.path, '/youtubei/v1/browse');
+      final body = jsonDecode(continuationRequest.body) as Map<String, Object?>;
+      expect(body['continuation'], 'invented-home-page-2');
+      expect(body, isNot(contains('browseId')));
+      expect(transport.toString(), isNot(contains('invented-home-page-2')));
+    });
+
+    test('keeps anonymous browse context in memory for continuation', () async {
+      final requests = <http.Request>[];
+      final anonymousContext = ['invented', 'anonymous', 'context'].join('-');
+      var postCount = 0;
+      final transport = YoutubeMusicCatalogTransport(
+        clientFactory: () => MockClient((request) async {
+          requests.add(request);
+          if (request.method == 'GET') {
+            return _bootstrapResponse();
+          }
+          postCount++;
+          return http.Response(
+            postCount == 1
+                ? jsonEncode({
+                    'responseContext': {'visitorData': anonymousContext},
+                    'contents': <String, Object?>{},
+                  })
+                : '{"continuationContents":{}}',
+            200,
+            headers: {'content-type': 'application/json'},
+          );
+        }),
+      );
+
+      await transport.send(
+        CatalogTransportRequest.json(
+          operation: CatalogOperation.home,
+          payload: const {},
+          maxAttempts: 1,
+        ),
+      );
+      await transport.send(
+        CatalogTransportRequest.json(
+          operation: CatalogOperation.continuation,
+          payload: const {'continuation': 'invented-page-2'},
+          maxAttempts: 1,
+        ),
+      );
+
+      final continuationRequest = requests.last;
+      final body = jsonDecode(continuationRequest.body) as Map<String, Object?>;
+      final context = body['context'] as Map<String, Object?>;
+      final client = context['client'] as Map<String, Object?>;
+      expect(client['visitorData'], anonymousContext);
+      expect(
+        continuationRequest.headers['x-goog-visitor-id'],
+        anonymousContext,
+      );
+      expect(transport.toString(), isNot(contains(anonymousContext)));
+    });
+
+    test(
+      'rejects malformed Home continuation input before networking',
+      () async {
+        var requestCount = 0;
+        final transport = YoutubeMusicCatalogTransport(
+          clientFactory: () => MockClient((request) async {
+            requestCount++;
+            return _bootstrapResponse();
+          }),
+        );
+
+        await expectLater(
+          transport.send(
+            CatalogTransportRequest.json(
+              operation: CatalogOperation.continuation,
+              payload: const {'continuation': '   '},
+            ),
+          ),
+          throwsA(
+            isA<CatalogFailure>().having(
+              (failure) => failure.kind,
+              'kind',
+              CatalogFailureKind.malformedResponse,
+            ),
+          ),
+        );
+        expect(requestCount, 0);
+      },
+    );
+
     test('bootstraps and sends a bounded guest Search request', () async {
       final requests = <http.Request>[];
       final transport = YoutubeMusicCatalogTransport(

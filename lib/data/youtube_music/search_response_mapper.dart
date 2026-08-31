@@ -23,6 +23,11 @@ final class SearchResponseMapper {
     } on FormatException {
       _fail(CatalogFailureKind.malformedResponse);
     }
+
+    return mapDecoded(decoded);
+  }
+
+  List<SearchResult> mapDecoded(Object? decoded) {
     if (decoded is! Map<String, Object?>) {
       _fail(CatalogFailureKind.unsupportedSchema);
     }
@@ -53,6 +58,16 @@ final class SearchResponseMapper {
           final card = map['musicCardShelfRenderer'];
           if (card is Map<String, Object?>) {
             final result = _mapCard(card);
+            if (result != null) {
+              results.add(result);
+              if (results.length > maxResults) {
+                _fail(CatalogFailureKind.unsupportedSchema);
+              }
+            }
+          }
+          final twoRowItem = map['musicTwoRowItemRenderer'];
+          if (twoRowItem is Map<String, Object?>) {
+            final result = _mapTwoRowItem(twoRowItem);
             if (result != null) {
               results.add(result);
               if (results.length > maxResults) {
@@ -91,6 +106,11 @@ final class SearchResponseMapper {
       return null;
     }
     final artworkUri = _artworkUri(renderer);
+    final durationRuns = <Map<String, Object?>>[
+      ...metadataRuns,
+      for (final column in _asList(renderer['fixedColumns']) ?? const [])
+        ..._fixedColumnRuns(column),
+    ];
     final hasWatchEndpoint =
         _text(
           _at(titleRun, const [
@@ -110,6 +130,7 @@ final class SearchResponseMapper {
         titleRun: titleRun,
         title: title,
         metadataRuns: metadataRuns,
+        durationRuns: durationRuns,
         artworkUri: artworkUri,
       );
     }
@@ -160,17 +181,92 @@ final class SearchResponseMapper {
     };
   }
 
+  SearchResult? _mapTwoRowItem(Map<String, Object?> renderer) {
+    final titleRuns = _runsAt(renderer, const ['title', 'runs']);
+    final subtitleRuns = _runsAt(renderer, const ['subtitle', 'runs']);
+    if (titleRuns.isEmpty) {
+      return null;
+    }
+    var titleRun = titleRuns.first;
+    final title = _text(titleRun['text']);
+    if (title == null) {
+      return null;
+    }
+    final rendererEndpoint = _asMap(renderer['navigationEndpoint']);
+    if (_asMap(titleRun['navigationEndpoint']) == null &&
+        rendererEndpoint != null) {
+      titleRun = {...titleRun, 'navigationEndpoint': rendererEndpoint};
+    }
+    final browseEndpoint = _asMap(
+      _at(titleRun, const ['navigationEndpoint', 'browseEndpoint']),
+    );
+    final artworkUri = _artworkUri(renderer);
+    final playlist = _mapPlaylist(
+      titleRun: titleRun,
+      title: title,
+      subtitleRuns: subtitleRuns,
+      artworkUri: artworkUri,
+    );
+    if (playlist != null) {
+      return playlist;
+    }
+
+    return switch (_pageType(browseEndpoint)) {
+      'MUSIC_PAGE_TYPE_ALBUM' => _mapAlbum(
+        titleRun: titleRun,
+        title: title,
+        metadataRuns: subtitleRuns,
+        artworkUri: artworkUri,
+      ),
+      'MUSIC_PAGE_TYPE_ARTIST' => _mapArtist(
+        titleRun: titleRun,
+        name: title,
+        artworkUri: artworkUri,
+      ),
+      _ => null,
+    };
+  }
+
+  PlaylistSearchResult? _mapPlaylist({
+    required Map<String, Object?> titleRun,
+    required String title,
+    required List<Map<String, Object?>> subtitleRuns,
+    required Uri? artworkUri,
+  }) {
+    final navigationEndpoint = _asMap(titleRun['navigationEndpoint']);
+    final browseEndpoint = _asMap(navigationEndpoint?['browseEndpoint']);
+    final playlistEndpoint = _asMap(
+      navigationEndpoint?['watchPlaylistEndpoint'],
+    );
+    final id =
+        _text(playlistEndpoint?['playlistId']) ??
+        (_pageType(browseEndpoint) == 'MUSIC_PAGE_TYPE_PLAYLIST'
+            ? _text(browseEndpoint?['browseId'])
+            : null);
+    final subtitle = _combinedText(subtitleRuns);
+    if (id == null || subtitle == null) {
+      return null;
+    }
+    return PlaylistSearchResult(
+      id: id,
+      title: title,
+      subtitle: subtitle,
+      artworkUri: artworkUri,
+    );
+  }
+
   TrackSearchResult? _mapTrack({
     required Map<String, Object?> renderer,
     required Map<String, Object?> titleRun,
     required String title,
     required List<Map<String, Object?>> metadataRuns,
+    required List<Map<String, Object?>> durationRuns,
     required Uri? artworkUri,
   }) {
     final videoId = _text(
       _at(titleRun, const ['navigationEndpoint', 'watchEndpoint', 'videoId']),
     );
-    final duration = _duration(metadataRuns);
+    final duration = _duration(durationRuns);
     final artists = _artistNames(metadataRuns);
     if (artists.isEmpty) {
       final fallback = _artistFromPlayLabel(renderer, title);
@@ -240,6 +336,14 @@ final class SearchResponseMapper {
     ]);
   }
 
+  List<Map<String, Object?>> _fixedColumnRuns(Object? column) {
+    return _runsAt(column, const [
+      'musicResponsiveListItemFixedColumnRenderer',
+      'text',
+      'runs',
+    ]);
+  }
+
   List<Map<String, Object?>> _runsAt(Object? value, List<String> path) {
     final runs = _asList(_at(value, path));
     if (runs == null) {
@@ -259,6 +363,17 @@ final class SearchResponseMapper {
           'MUSIC_PAGE_TYPE_ARTIST')
         ?_text(run['text']),
   ];
+
+  String? _combinedText(List<Map<String, Object?>> runs) {
+    final buffer = StringBuffer();
+    for (final run in runs) {
+      final value = run['text'];
+      if (value is String) {
+        buffer.write(value);
+      }
+    }
+    return _text(buffer.toString());
+  }
 
   String? _artistFromPlayLabel(Map<String, Object?> renderer, String title) {
     final label = _text(
@@ -301,11 +416,17 @@ final class SearchResponseMapper {
   Uri? _artworkUri(Map<String, Object?> renderer) {
     final thumbnails = _asList(
       _at(renderer, const [
-        'thumbnail',
-        'musicThumbnailRenderer',
-        'thumbnail',
-        'thumbnails',
-      ]),
+            'thumbnail',
+            'musicThumbnailRenderer',
+            'thumbnail',
+            'thumbnails',
+          ]) ??
+          _at(renderer, const [
+            'thumbnailRenderer',
+            'musicThumbnailRenderer',
+            'thumbnail',
+            'thumbnails',
+          ]),
     );
     if (thumbnails == null) {
       return null;
