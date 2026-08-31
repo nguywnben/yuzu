@@ -23,6 +23,11 @@ final class SearchResponseMapper {
     } on FormatException {
       _fail(CatalogFailureKind.malformedResponse);
     }
+
+    return mapDecoded(decoded);
+  }
+
+  List<SearchResult> mapDecoded(Object? decoded) {
     if (decoded is! Map<String, Object?>) {
       _fail(CatalogFailureKind.unsupportedSchema);
     }
