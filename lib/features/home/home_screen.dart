@@ -244,13 +244,38 @@ class _CatalogCard extends StatelessWidget {
       AlbumSearchResult(:final artistLabel) => (
         artistLabel,
         Icons.album_rounded,
-        null,
+        () {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Album: ${item.title} (Use Search to play tracks)'),
+              duration: const Duration(seconds: 2),
+            ),
+          );
+        },
       ),
-      ArtistSearchResult() => ('Artist', Icons.person_rounded, null),
+      ArtistSearchResult() => (
+        'Artist',
+        Icons.person_rounded,
+        () {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Artist: ${item.title}'),
+              duration: const Duration(seconds: 2),
+            ),
+          );
+        },
+      ),
       PlaylistSearchResult(:final subtitle) => (
         subtitle,
         Icons.queue_music_rounded,
-        null,
+        () {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Playlist: ${item.title} (Opening...)'),
+              duration: const Duration(seconds: 2),
+            ),
+          );
+        },
       ),
     };
     return SizedBox(
