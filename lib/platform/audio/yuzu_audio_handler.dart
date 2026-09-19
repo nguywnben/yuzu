@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:audio_service/audio_service.dart';
 import 'package:just_audio/just_audio.dart';
 
+import '../../data/local/local_library_database.dart';
+import '../../data/youtube_music/stream_resolver.dart';
 import '../../domain/media/track.dart';
 import '../../features/player/playback_driver.dart';
 import '../../infrastructure/audio/test_tone.dart';
@@ -10,15 +12,19 @@ import 'audio_service_mappers.dart';
 
 final class YuzuAudioHandler extends BaseAudioHandler
     implements PlaybackDriver {
-  YuzuAudioHandler() : _player = AudioPlayer() {
+  YuzuAudioHandler({StreamResolver? streamResolver})
+    : _player = AudioPlayer(),
+      _streamResolver = streamResolver ?? YoutubeStreamResolver() {
     _playbackSubscription = _player.playbackEventStream.listen(_broadcastState);
     _indexSubscription = _player.currentIndexStream.listen(_broadcastMediaItem);
   }
 
   final AudioPlayer _player;
+  final StreamResolver _streamResolver;
   late final StreamSubscription<PlaybackEvent> _playbackSubscription;
   late final StreamSubscription<int?> _indexSubscription;
   List<MediaItem> _mediaItems = const [];
+  List<Track> _tracks = const [];
 
   @override
   Stream<PlaybackDriverState> get states => playbackState
@@ -32,16 +38,48 @@ final class YuzuAudioHandler extends BaseAudioHandler
   @override
   Future<void> loadQueue(List<Track> tracks, {required int startIndex}) async {
     RangeError.checkValidIndex(startIndex, tracks, 'startIndex');
-    final toneUri = await ensureYuzuTestToneFile();
+    _tracks = List.unmodifiable(tracks);
     _mediaItems = List.unmodifiable(tracks.map(mediaItemFromTrack));
     queue.add(_mediaItems);
     mediaItem.add(_mediaItems[startIndex]);
 
-    await _player.setAudioSources([
-      for (var index = 0; index < tracks.length; index++)
-        AudioSource.uri(toneUri),
-    ], initialIndex: startIndex);
+    final audioSources = <AudioSource>[];
+    for (var index = 0; index < tracks.length; index++) {
+      final track = tracks[index];
+      final isYoutubeTrack = RegExp(r'^[A-Za-z0-9_-]{11}$').hasMatch(track.id);
+      if (isYoutubeTrack) {
+        try {
+          final stream = await _streamResolver.resolve(track.id);
+          audioSources.add(
+            AudioSource.uri(
+              stream.uri,
+              headers: stream.headers,
+              tag: _mediaItems[index],
+            ),
+          );
+          continue;
+        } catch (_) {
+          // Fallback to local tone if stream resolution fails
+        }
+      }
+
+      final toneUri = await ensureYuzuTestToneFile();
+      audioSources.add(AudioSource.uri(toneUri, tag: _mediaItems[index]));
+    }
+
+    await _player.setAudioSources(audioSources, initialIndex: startIndex);
     await _player.play();
+
+    unawaited(_recordCurrentHistory(startIndex));
+  }
+
+  Future<void> _recordCurrentHistory(int index) async {
+    if (index >= 0 && index < _tracks.length) {
+      try {
+        final db = await LocalLibraryDatabase.getInstance();
+        await db.recordHistory(_tracks[index]);
+      } catch (_) {}
+    }
   }
 
   @override
@@ -77,6 +115,7 @@ final class YuzuAudioHandler extends BaseAudioHandler
   void _broadcastMediaItem(int? index) {
     if (index != null && index >= 0 && index < _mediaItems.length) {
       mediaItem.add(_mediaItems[index]);
+      unawaited(_recordCurrentHistory(index));
     }
   }
 

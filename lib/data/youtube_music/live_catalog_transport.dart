@@ -19,7 +19,7 @@ final class YoutubeMusicCatalogTransport implements CatalogTransport {
   static const _searchPath = '/youtubei/v1/search';
   static const _browsePath = '/youtubei/v1/browse';
   static const _homeBrowseId = 'FEmusic_home';
-  static const _bootstrapMaxBytes = 512 * 1024;
+  static const _bootstrapMaxBytes = 1024 * 1024;
   static const _maxContinuationBytes = 2048;
   static const _maxAnonymousContextBytes = 512;
   static const _userAgent =
