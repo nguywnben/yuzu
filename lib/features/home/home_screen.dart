@@ -6,6 +6,7 @@ import '../../domain/media/home_section.dart';
 import '../../domain/media/music_provider.dart';
 import '../../domain/media/search_result.dart';
 import '../../domain/media/track.dart';
+import '../playlist/playlist_detail_screen.dart';
 import '../shared/track_widgets.dart';
 import 'home_view_model.dart';
 
@@ -217,6 +218,18 @@ class _HomeSectionView extends StatelessWidget {
                   onTrackSelected: onTrackSelected == null
                       ? null
                       : (track) => onTrackSelected!(track, section.tracks),
+                  onPlaylistSelected: onTrackSelected == null
+                      ? null
+                      : (playlist) {
+                          Navigator.of(context).push(
+                            MaterialPageRoute<void>(
+                              builder: (context) => PlaylistDetailScreen(
+                                item: playlist,
+                                onTrackSelected: onTrackSelected!,
+                              ),
+                            ),
+                          );
+                        },
                 );
               },
             ),
@@ -228,10 +241,15 @@ class _HomeSectionView extends StatelessWidget {
 }
 
 class _CatalogCard extends StatelessWidget {
-  const _CatalogCard({required this.item, this.onTrackSelected});
+  const _CatalogCard({
+    required this.item,
+    this.onTrackSelected,
+    this.onPlaylistSelected,
+  });
 
   final SearchResult item;
   final ValueChanged<Track>? onTrackSelected;
+  final ValueChanged<SearchResult>? onPlaylistSelected;
 
   @override
   Widget build(BuildContext context) {
@@ -244,38 +262,13 @@ class _CatalogCard extends StatelessWidget {
       AlbumSearchResult(:final artistLabel) => (
         artistLabel,
         Icons.album_rounded,
-        () {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Album: ${item.title} (Use Search to play tracks)'),
-              duration: const Duration(seconds: 2),
-            ),
-          );
-        },
+        onPlaylistSelected == null ? null : () => onPlaylistSelected!(item),
       ),
-      ArtistSearchResult() => (
-        'Artist',
-        Icons.person_rounded,
-        () {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Artist: ${item.title}'),
-              duration: const Duration(seconds: 2),
-            ),
-          );
-        },
-      ),
+      ArtistSearchResult() => ('Artist', Icons.person_rounded, null),
       PlaylistSearchResult(:final subtitle) => (
         subtitle,
         Icons.queue_music_rounded,
-        () {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Playlist: ${item.title} (Opening...)'),
-              duration: const Duration(seconds: 2),
-            ),
-          );
-        },
+        onPlaylistSelected == null ? null : () => onPlaylistSelected!(item),
       ),
     };
     return SizedBox(

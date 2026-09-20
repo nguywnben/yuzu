@@ -110,7 +110,9 @@ class _YuzuShellState extends State<YuzuShell> {
           musicProvider: widget.musicProvider,
           onTrackSelected: _playTrack,
         ),
-        LibraryScreen(onTrackSelected: _playTrack),
+        LibraryScreen(
+          onTrackSelected: _playTrack,
+        ),
       ],
     );
 
