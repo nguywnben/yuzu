@@ -43,33 +43,38 @@ final class YuzuAudioHandler extends BaseAudioHandler
     queue.add(_mediaItems);
     mediaItem.add(_mediaItems[startIndex]);
 
-    final audioSources = <AudioSource>[];
-    for (var index = 0; index < tracks.length; index++) {
-      final track = tracks[index];
-      final isYoutubeTrack = RegExp(r'^[A-Za-z0-9_-]{11}$').hasMatch(track.id);
-      if (isYoutubeTrack) {
-        try {
-          final stream = await _streamResolver.resolve(track.id);
-          audioSources.add(
-            AudioSource.uri(
-              stream.uri,
-              headers: stream.headers,
-              tag: _mediaItems[index],
-            ),
-          );
-          continue;
-        } catch (_) {
-          // Fallback to local tone if stream resolution fails
-        }
-      }
+    // 1. Resolve and play the selected track immediately
+    final initialTrack = tracks[startIndex];
+    final isInitialYoutube =
+        RegExp(r'^[A-Za-z0-9_-]{11}$').hasMatch(initialTrack.id);
 
+    AudioSource initialSource;
+    if (isInitialYoutube) {
+      try {
+        final stream = await _streamResolver.resolve(initialTrack.id);
+        initialSource = AudioSource.uri(
+          stream.uri,
+          headers: stream.headers,
+          tag: _mediaItems[startIndex],
+        );
+      } catch (_) {
+        final toneUri = await ensureYuzuTestToneFile();
+        initialSource = AudioSource.uri(
+          toneUri,
+          tag: _mediaItems[startIndex],
+        );
+      }
+    } else {
       final toneUri = await ensureYuzuTestToneFile();
-      audioSources.add(AudioSource.uri(toneUri, tag: _mediaItems[index]));
+      initialSource = AudioSource.uri(
+        toneUri,
+        tag: _mediaItems[startIndex],
+      );
     }
 
-    await _player.setAudioSources(audioSources, initialIndex: startIndex);
+    // Set and play right away so the user hears music instantly
+    await _player.setAudioSources([initialSource]);
     await _player.play();
-
     unawaited(_recordCurrentHistory(startIndex));
   }
 
